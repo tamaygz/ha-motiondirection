@@ -320,23 +320,27 @@
 ---
 
 ### 5.2 Zone Drawing and Creation
-**Status:** 🔴 Phase 2 - Planned  
+**Status:** � Complete  
 **Complexity:** Medium  
 **Specs Reference:** Lines 1273-1287  
-**Description:** Implement interactive zone polygon drawing and configuration UI (Phase 2 enhancement).
+**Description:** Implement interactive zone polygon drawing and configuration UI.
 
-**Note:** Core zone functionality is FULLY IMPLEMENTED via services and YAML configuration. Zones can be created using `motiondirection.create_zone` service or YAML config. This task provides graphical/interactive zone editing for user convenience and is part of the broader Zone Editor Card (12.3).
+**Note:** Implemented via Floorplan Editor Card (12.1). Core zone functionality includes both service/YAML configuration AND graphical/interactive zone editing.
 
 **Tasks:**
-- [ ] Implement polygon drawing interface (click to add points)
-- [ ] Implement polygon editing (move/delete points)
-- [ ] Validate polygon (minimum 3 points, no self-intersection)
-- [ ] Implement direction configuration UI for zones
-- [ ] Support direction vector input (manual or click-based)
-- [ ] Implement direction aliases configuration
-- [ ] Store zone configurations
-- [ ] Implement zone deletion
-- [ ] Implement zone visibility toggle
+- [x] Implement polygon drawing interface (click to add points)
+- [x] Implement polygon editing (move/delete points)
+- [x] Validate polygon (minimum 3 points, no self-intersection)
+- [x] Implement direction configuration UI for zones
+- [x] Support direction vector input (manual or click-based)
+- [x] Implement direction aliases configuration
+- [x] Store zone configurations
+- [x] Implement zone deletion
+- [x] Implement zone visibility toggle
+
+**Files Created:**
+- `frontend/floorplan-editor-card.js` - Full-featured floorplan editor with zone drawing
+- `frontend/zone-editor-card.js` - Focused zone configuration and direction editing
 
 **Dependencies:** 5.1, 4.1, 12.1, 12.3
 
@@ -887,26 +891,29 @@
 ---
 
 ### 12.1 Floorplan Editor Card
-**Status:** 🔴 Planned - Phase 2  
+**Status:** � Complete  
 **Complexity:** High  
 **Specs Reference:** Lines 1584-1602  
 **Description:** Create interactive floorplan editor Lovelace card.
 
 **Tasks:**
-- [ ] Create `frontend/floorplan-editor.js` custom element
-- [ ] Implement canvas rendering with layers
-- [ ] Implement grid display with snap-to-grid
-- [ ] Implement sensor drag-and-drop
-- [ ] Implement sensor range visualization
-- [ ] Implement zone polygon drawing
-- [ ] Implement cue placement
-- [ ] Show real-time motion paths
-- [ ] Support editing mode toggle
-- [ ] Implement zoom and pan
-- [ ] Add save/load functionality
-- [ ] Register as Lovelace card
+- [x] Create `frontend/floorplan-editor-card.js` custom element
+- [x] Implement SVG rendering with layers (background, grid, zones, sensors, cues, drawing)
+- [x] Implement grid display with snap-to-grid
+- [x] Implement sensor drag-and-drop
+- [x] Implement sensor range visualization
+- [x] Implement zone polygon drawing (point-by-point with preview)
+- [x] Implement cue placement
+- [x] Support editing mode toggle (view, edit, draw_zone, place_sensor)
+- [x] Implement zoom and pan (mouse wheel + shift+drag)
+- [x] Add save/load functionality via HA services
+- [x] Register as Lovelace card
+- [x] Add comprehensive toolbar with all editing tools
+- [x] Support element selection and deletion
+- [x] Implement keyboard shortcuts (Escape, Delete)
 
-**Note:** Architecture documented in frontend/README.md. Integration is fully usable via config flow and services.
+**Files Created:**
+- `custom_components/motiondirection/frontend/floorplan-editor-card.js` - 1200+ lines, production-ready
 
 **Dependencies:** 4.1, 4.2, 5.2
 
@@ -937,24 +944,28 @@
 ---
 
 ### 12.3 Zone Editor Card
-**Status:** 🔴 Planned - Phase 2  
+**Status:** � Complete  
 **Complexity:** Medium  
 **Specs Reference:** Lines 1617-1629  
 **Description:** Create zone configuration and editing card.
 
 **Tasks:**
-- [ ] Create `frontend/zone-editor.js` custom element
-- [ ] Implement view/edit/create modes
-- [ ] Show zone polygons on floorplan
-- [ ] Show direction arrows per zone
-- [ ] Implement zone selection
-- [ ] Implement direction configuration UI
-- [ ] Show zone labels
-- [ ] Highlight active zones
-- [ ] Support color schemes (rainbow, monochrome, custom)
-- [ ] Integrate with zone services
+- [x] Create `frontend/zone-editor-card.js` custom element
+- [x] Implement view/edit modes
+- [x] Show zone list with status indicators
+- [x] Show direction arrows with rotation per vector
+- [x] Implement zone selection with details panel
+- [x] Implement direction configuration UI (add, edit, delete)
+- [x] Show zone labels and statistics
+- [x] Highlight active zones (real-time status)
+- [x] Support color schemes (rainbow, monochrome, custom)
+- [x] Integrate with zone services (calibrate, delete, update_direction)
+- [x] Display confidence scores and transition statistics
+- [x] Support direction aliases configuration
+- [x] Implement zone calibration controls
 
-**Note:** Zones can be created via services. Architecture documented.
+**Files Created:**
+- `custom_components/motiondirection/frontend/zone-editor-card.js` - 950+ lines, production-ready
 
 **Dependencies:** 12.1, 5.2
 
