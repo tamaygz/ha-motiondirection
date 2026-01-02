@@ -39,6 +39,13 @@ async def async_setup_entry(
         MotionAnomalyBinarySensor(coordinator, config_entry),
     ]
     
+    # Create zone occupancy and transit sensors for each zone
+    for zone in coordinator.zone_manager.zones.values():
+        entities.extend([
+            ZoneOccupancyBinarySensor(coordinator, config_entry, zone),
+            ZoneTransitBinarySensor(coordinator, config_entry, zone),
+        ])
+    
     async_add_entities(entities)
 
 
@@ -217,3 +224,115 @@ class MotionAnomalyBinarySensor(CoordinatorEntity, BinarySensorEntity):
         self._actual_pattern = actual
         
         self.coordinator.set_anomaly_state(score > 0.7)
+
+
+class ZoneOccupancyBinarySensor(CoordinatorEntity, BinarySensorEntity):
+    """Binary sensor for zone occupancy detection."""
+
+    _attr_has_entity_name = True
+    _attr_device_class = BinarySensorDeviceClass.OCCUPANCY
+
+    def __init__(
+        self,
+        coordinator: MotionDirectionCoordinator,
+        config_entry: ConfigEntry,
+        zone: Any,
+    ) -> None:
+        """Initialize the zone occupancy binary sensor."""
+        super().__init__(coordinator)
+        self._zone = zone
+        self._attr_unique_id = f"{config_entry.entry_id}_zone_{zone.id}_occupied"
+        self._attr_name = f"{zone.name} Occupied"
+        self._attr_device_info = DeviceInfo(
+            identifiers={(DOMAIN, f"{config_entry.entry_id}_zone_{zone.id}")},
+            name=f"Zone {zone.name}",
+            model="Trigger Zone",
+            manufacturer="MotionDirection",
+        )
+
+    @property
+    def is_on(self) -> bool:
+        """Return True if zone is occupied."""
+        return self._zone.current_state == "occupied"
+
+    @property
+    def extra_state_attributes(self) -> dict[str, Any]:
+        """Return the state attributes."""
+        attrs = {
+            "zone_id": self._zone.id,
+            "zone_name": self._zone.name,
+        }
+
+        # Get zone state from coordinator
+        zone_state = self.coordinator.get_zone_state(self._zone.id)
+        if zone_state:
+            attrs.update({
+                "occupancy_start": zone_state.get("occupancy_start"),
+                "occupancy_duration": zone_state.get("occupancy_duration"),
+                "last_direction": zone_state.get("last_direction"),
+                "motion_detected": zone_state.get("motion_detected", False),
+                "sensors_in_zone": zone_state.get("sensors_in_zone", []),
+            })
+
+        return attrs
+
+    @callback
+    def _handle_coordinator_update(self) -> None:
+        """Handle updated data from the coordinator."""
+        self.async_write_ha_state()
+
+
+class ZoneTransitBinarySensor(CoordinatorEntity, BinarySensorEntity):
+    """Binary sensor for zone transit detection."""
+
+    _attr_has_entity_name = True
+    _attr_device_class = BinarySensorDeviceClass.MOTION
+
+    def __init__(
+        self,
+        coordinator: MotionDirectionCoordinator,
+        config_entry: ConfigEntry,
+        zone: Any,
+    ) -> None:
+        """Initialize the zone transit binary sensor."""
+        super().__init__(coordinator)
+        self._zone = zone
+        self._attr_unique_id = f"{config_entry.entry_id}_zone_{zone.id}_transit"
+        self._attr_name = f"{zone.name} Transit"
+        self._attr_device_info = DeviceInfo(
+            identifiers={(DOMAIN, f"{config_entry.entry_id}_zone_{zone.id}")},
+            name=f"Zone {zone.name}",
+            model="Trigger Zone",
+            manufacturer="MotionDirection",
+        )
+
+    @property
+    def is_on(self) -> bool:
+        """Return True if zone is in transit state."""
+        return self._zone.current_state == "transit"
+
+    @property
+    def extra_state_attributes(self) -> dict[str, Any]:
+        """Return the state attributes."""
+        attrs = {
+            "zone_id": self._zone.id,
+        }
+
+        # Get zone state from coordinator
+        zone_state = self.coordinator.get_zone_state(self._zone.id)
+        if zone_state:
+            attrs.update({
+                "direction": zone_state.get("direction"),
+                "confidence": zone_state.get("confidence"),
+                "entry_point": zone_state.get("entry_point"),
+                "current_position": zone_state.get("current_position"),
+                "predicted_exit": zone_state.get("predicted_exit"),
+                "progress": zone_state.get("progress"),
+            })
+
+        return attrs
+
+    @callback
+    def _handle_coordinator_update(self) -> None:
+        """Handle updated data from the coordinator."""
+        self.async_write_ha_state()

@@ -262,3 +262,52 @@ class MotionDirectionCoordinator(DataUpdateCoordinator):
             Pattern analyzer
         """
         return self.pattern_analyzer
+    
+    def get_zone_state(self, zone_id: str) -> dict[str, Any]:
+        """Get the current state of a zone.
+        
+        Args:
+            zone_id: Zone identifier
+            
+        Returns:
+            Dictionary with zone state data
+        """
+        # Placeholder - will be populated by zone manager events
+        return {}
+    
+    def get_zone_statistics(self, zone_id: str) -> dict[str, Any]:
+        """Get statistics for a zone.
+        
+        Args:
+            zone_id: Zone identifier
+            
+        Returns:
+            Dictionary with zone statistics
+        """
+        # Placeholder - will be populated by zone manager
+        return {}
+    
+    def get_cue_state(self, cue_id: str) -> dict[str, Any]:
+        """Get the current state of a secondary cue.
+        
+        Args:
+            cue_id: Cue identifier
+            
+        Returns:
+            Dictionary with cue state data
+        """
+        # Placeholder - will be populated by hybrid detector
+        return {}
+    
+    def get_correlation_data(self) -> dict[str, Any]:
+        """Get correlation analysis data.
+        
+        Returns:
+            Dictionary with correlation data
+        """
+        # Placeholder - will be populated by hybrid detector
+        return {
+            "active_correlations": [],
+            "correlation_statistics": {},
+            "top_correlations": [],
+        }

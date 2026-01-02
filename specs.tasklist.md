@@ -361,39 +361,39 @@
 ---
 
 ### 5.4 Zone Sensors
-**Status:** 🔴 Not Started  
+**Status:** � Complete  
 **Complexity:** Medium  
 **Specs Reference:** Lines 1102-1170  
 **Description:** Create zone-specific sensor entities.
 
 **Tasks:**
-- [ ] Create `sensor.zone_{id}_direction` entity (Lines 1104-1123)
-- [ ] Create `binary_sensor.zone_{id}_occupied` entity (Lines 1127-1138)
-- [ ] Create `binary_sensor.zone_{id}_transit` entity (Lines 1142-1152)
-- [ ] Create `sensor.zone_{id}_statistics` entity (Lines 1156-1170)
-- [ ] Implement proper state updates on zone transitions
-- [ ] Implement attribute updates (confidence, timing, sensors, etc.)
-- [ ] Implement statistics tracking (daily/hourly counts, averages)
-- [ ] Implement statistics reset at midnight
+- [x] Create `sensor.zone_{id}_direction` entity (Lines 1104-1123)
+- [x] Create `binary_sensor.zone_{id}_occupied` entity (Lines 1127-1138)
+- [x] Create `binary_sensor.zone_{id}_transit` entity (Lines 1142-1152)
+- [x] Create `sensor.zone_{id}_statistics` entity (Lines 1156-1170)
+- [x] Implement proper state updates on zone transitions
+- [x] Implement attribute updates (confidence, timing, sensors, etc.)
+- [x] Implement statistics tracking (daily/hourly counts, averages)
+- [x] Implement statistics reset at midnight
 
 **Dependencies:** 5.1
 
 ---
 
 ### 5.5 Zone Events
-**Status:** 🔴 Not Started  
+**Status:** 🟢 Complete  
 **Complexity:** Low  
 **Specs Reference:** Lines 1454-1530  
 **Description:** Implement zone-specific event firing.
 
 **Tasks:**
-- [ ] Implement `motiondirection_zone_entered` event (Lines 1456-1465)
-- [ ] Implement `motiondirection_zone_exited` event (Lines 1467-1477)
-- [ ] Implement `motiondirection_zone_direction_detected` event (Lines 1479-1489)
-- [ ] Implement `motiondirection_zone_pattern_detected` event (Lines 1491-1500)
-- [ ] Fire events at appropriate times in zone transition lifecycle
-- [ ] Include all required event data as specified
-- [ ] Add event logging for debugging
+- [x] Implement `motiondirection_zone_entered` event (Lines 1456-1465)
+- [x] Implement `motiondirection_zone_exited` event (Lines 1467-1477)
+- [x] Implement `motiondirection_zone_direction_detected` event (Lines 1479-1489)
+- [x] Implement `motiondirection_zone_pattern_detected` event (Lines 1491-1500)
+- [x] Fire events at appropriate times in zone transition lifecycle
+- [x] Include all required event data as specified
+- [x] Add event logging for debugging
 
 **Dependencies:** 5.1
 
