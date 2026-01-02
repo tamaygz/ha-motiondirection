@@ -141,7 +141,7 @@ class CueCorrelationAnalyzer:
             cue_event: Correlated cue event
             was_successful: Whether correlation led to correct prediction
         """
-        motion_id = motion_event.sensor.id
+        motion_id = motion_event.sensor.entity_id
         cue_id = cue_event.cue.id
         
         # Calculate metrics
