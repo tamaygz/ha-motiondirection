@@ -198,7 +198,7 @@ class PatternAnalyzer:
                         signature=signature,
                         occurrences=data["count"],
                         confidence=avg_confidence,
-                        example_sequence=data["example"],
+                        example=data["example"],
                     )
                 )
         

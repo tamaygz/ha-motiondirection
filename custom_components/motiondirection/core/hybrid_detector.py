@@ -88,8 +88,8 @@ class HybridMotionDetector:
         Args:
             cue: Secondary cue configuration
         """
-        self.cues[cue.cue_id] = cue
-        _LOGGER.info("Added secondary cue: %s (%s)", cue.cue_id, cue.cue_type)
+        self.cues[cue.id] = cue
+        _LOGGER.info("Added secondary cue: %s (%s)", cue.id, cue.cue_type)
     
     def remove_cue(self, cue_id: str) -> bool:
         """Remove secondary cue.
@@ -235,7 +235,7 @@ class HybridMotionDetector:
                     
                     direction_votes[direction] += confidence
                     total_confidence += confidence
-                    contributing_cues.append(cue_event.cue.cue_id)
+                    contributing_cues.append(cue_event.cue.id)
         
         # Find winner
         if direction_votes:

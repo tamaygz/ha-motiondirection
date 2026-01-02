@@ -41,11 +41,11 @@ class MotionPath:
         pattern_type: Type of pattern (linear, circular, etc.)
     """
     
-    points: List[PathPoint] = field(default_factory=list)
     confidence: float = 0.0
     direction_vector: Optional[Tuple[float, float]] = None
     speed: Optional[float] = None
     pattern_type: Optional[str] = None
+    points: List[PathPoint] = field(default_factory=list)
     
     def __post_init__(self) -> None:
         """Sort points by timestamp."""
@@ -76,7 +76,11 @@ class MotionPath:
         """Get duration of path in milliseconds."""
         if len(self.points) < 2:
             return 0.0
-        delta = self.end_time - self.start_time
+        start = self.start_time
+        end = self.end_time
+        if start is None or end is None:
+            return 0.0
+        delta = end - start
         return delta.total_seconds() * 1000
     
     def calculate_total_distance(self) -> float:

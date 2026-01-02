@@ -59,9 +59,10 @@ class LearnedPattern:
             return None
         
         # Find hour with most occurrences
+        distribution = self.time_of_day_distribution
         max_hour = max(
-            range(len(self.time_of_day_distribution)),
-            key=lambda i: self.time_of_day_distribution[i]
+            range(len(distribution)),
+            key=lambda i: distribution[i]
         )
         return max_hour
     

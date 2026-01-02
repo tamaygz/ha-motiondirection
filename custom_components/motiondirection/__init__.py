@@ -139,6 +139,108 @@ async def async_register_services(hass: HomeAssistant) -> None:
         vol.Optional("include_cues", default=False): cv.boolean,
     })
     
+    # Zone service schemas
+    SERVICE_CREATE_ZONE_SCHEMA = vol.Schema({
+        vol.Required("floorplan_id"): cv.string,
+        vol.Required("zone_id"): cv.string,
+        vol.Required("name"): cv.string,
+        vol.Required("polygon"): vol.All(cv.ensure_list, [vol.All(cv.ensure_list, [vol.Coerce(float)])]),
+        vol.Optional("min_dwell_time", default=500): vol.All(vol.Coerce(int), vol.Range(min=100, max=10000)),
+        vol.Optional("sensitivity", default=0.7): vol.All(vol.Coerce(float), vol.Range(min=0.0, max=1.0)),
+    })
+    
+    SERVICE_CALIBRATE_ZONE_SCHEMA = vol.Schema({
+        vol.Required("zone_id"): cv.string,
+        vol.Optional("mode", default="automatic"): vol.In(["automatic", "manual", "guided"]),
+        vol.Optional("duration", default=300): vol.All(vol.Coerce(int), vol.Range(min=60, max=3600)),
+        vol.Optional("learn_directions", default=True): cv.boolean,
+    })
+    
+    SERVICE_UPDATE_ZONE_DIRECTION_SCHEMA = vol.Schema({
+        vol.Required("zone_id"): cv.string,
+        vol.Required("direction_name"): cv.string,
+        vol.Optional("vector"): vol.All(cv.ensure_list, [vol.Coerce(float)]),
+        vol.Optional("aliases"): vol.All(cv.ensure_list, [cv.string]),
+    })
+    
+    SERVICE_TEST_ZONE_TRIGGER_SCHEMA = vol.Schema({
+        vol.Required("zone_id"): cv.string,
+        vol.Required("direction"): cv.string,
+        vol.Optional("confidence", default=0.95): vol.All(vol.Coerce(float), vol.Range(min=0.0, max=1.0)),
+        vol.Optional("duration", default=2000): vol.All(vol.Coerce(int), vol.Range(min=100, max=10000)),
+    })
+    
+    SERVICE_ANALYZE_ZONE_PATTERNS_SCHEMA = vol.Schema({
+        vol.Optional("zone_id"): cv.string,
+        vol.Optional("start_time"): cv.string,
+        vol.Optional("end_time"): cv.string,
+        vol.Optional("min_confidence", default=0.7): vol.All(vol.Coerce(float), vol.Range(min=0.0, max=1.0)),
+    })
+    
+    SERVICE_LEARN_ZONE_DIRECTIONS_SCHEMA = vol.Schema({
+        vol.Required("zone_id"): cv.string,
+        vol.Optional("learning_period", default=86400): vol.All(vol.Coerce(int), vol.Range(min=3600, max=604800)),
+        vol.Optional("min_samples", default=20): vol.All(vol.Coerce(int), vol.Range(min=5, max=1000)),
+        vol.Optional("update_config", default=True): cv.boolean,
+    })
+    
+    # Cue service schemas
+    SERVICE_ADD_SECONDARY_CUE_SCHEMA = vol.Schema({
+        vol.Required("floorplan_id"): cv.string,
+        vol.Required("entity_id"): cv.entity_id,
+        vol.Required("cue_type"): vol.In(["door", "light", "switch", "presence", "temperature", "vibration", "power", "media"]),
+        vol.Required("position"): vol.All(cv.ensure_list, [vol.Coerce(float)]),
+        vol.Optional("correlation_window", default=3000): vol.All(vol.Coerce(int), vol.Range(min=500, max=30000)),
+        vol.Optional("confidence_weight", default=0.7): vol.All(vol.Coerce(float), vol.Range(min=0.0, max=1.0)),
+    })
+    
+    SERVICE_CONFIGURE_CUE_HINTS_SCHEMA = vol.Schema({
+        vol.Required("cue_id"): cv.string,
+        vol.Required("hints"): vol.All(cv.ensure_list, [dict]),
+    })
+    
+    SERVICE_ANALYZE_CUE_CORRELATIONS_SCHEMA = vol.Schema({
+        vol.Required("floorplan_id"): cv.string,
+        vol.Optional("start_time"): cv.string,
+        vol.Optional("end_time"): cv.string,
+        vol.Optional("min_correlation", default=0.5): vol.All(vol.Coerce(float), vol.Range(min=0.0, max=1.0)),
+        vol.Optional("include_suggestions", default=True): cv.boolean,
+    })
+    
+    SERVICE_LEARN_CUE_PATTERNS_SCHEMA = vol.Schema({
+        vol.Required("floorplan_id"): cv.string,
+        vol.Optional("learning_duration", default=604800): vol.All(vol.Coerce(int), vol.Range(min=86400, max=2592000)),
+        vol.Optional("auto_apply", default=False): cv.boolean,
+        vol.Optional("confidence_threshold", default=0.75): vol.All(vol.Coerce(float), vol.Range(min=0.5, max=1.0)),
+    })
+    
+    SERVICE_TEST_HYBRID_DETECTION_SCHEMA = vol.Schema({
+        vol.Required("motion_sensor"): cv.entity_id,
+        vol.Required("expected_direction"): cv.string,
+        vol.Optional("test_duration", default=30): vol.All(vol.Coerce(int), vol.Range(min=10, max=300)),
+    })
+    
+    # Analysis service schemas
+    SERVICE_ANALYZE_PATTERN_SCHEMA = vol.Schema({
+        vol.Required("start_time"): cv.string,
+        vol.Required("end_time"): cv.string,
+        vol.Optional("pattern_type", default="all"): vol.In(["linear", "circular", "zone_transition", "all"]),
+        vol.Optional("min_confidence", default=0.6): vol.All(vol.Coerce(float), vol.Range(min=0.0, max=1.0)),
+        vol.Optional("floorplan_id"): cv.string,
+    })
+    
+    SERVICE_GENERATE_REPORT_SCHEMA = vol.Schema({
+        vol.Required("floorplan_id"): cv.string,
+        vol.Optional("report_type", default="daily"): vol.In(["daily", "weekly", "monthly", "custom"]),
+        vol.Optional("start_date"): cv.string,
+        vol.Optional("end_date"): cv.string,
+        vol.Optional("include_zones", default=True): cv.boolean,
+        vol.Optional("include_cues", default=True): cv.boolean,
+        vol.Optional("include_patterns", default=True): cv.boolean,
+        vol.Optional("output_format", default="json"): vol.In(["pdf", "json", "yaml"]),
+    })
+    
+    # Core service handlers
     @callback
     async def async_handle_calibrate(call: ServiceCall) -> None:
         """Handle calibrate service call.
@@ -216,7 +318,248 @@ async def async_register_services(hass: HomeAssistant) -> None:
         # Simulation logic would be implemented here
         _LOGGER.warning("Simulation service is not yet fully implemented")
     
-    # Register services
+    # Zone service handlers
+    @callback
+    async def async_handle_create_zone(call: ServiceCall) -> None:
+        """Handle create_zone service call."""
+        floorplan_id = call.data["floorplan_id"]
+        zone_id = call.data["zone_id"]
+        name = call.data["name"]
+        polygon = call.data["polygon"]
+        min_dwell_time = call.data.get("min_dwell_time", 500)
+        sensitivity = call.data.get("sensitivity", 0.7)
+        
+        _LOGGER.info("Create zone service called: %s on %s", zone_id, floorplan_id)
+        
+        coordinators = _get_coordinators(hass, floorplan_id)
+        for coordinator in coordinators:
+            try:
+                from .models import TriggerZone
+                zone = TriggerZone(
+                    id=zone_id,
+                    name=name,
+                    polygon=polygon,
+                    known_directions=[],
+                    min_dwell_time=min_dwell_time,
+                    sensitivity=sensitivity,
+                )
+                coordinator.get_zone_manager().add_zone(zone)
+                _LOGGER.info("Zone created: %s", zone_id)
+            except Exception as err:
+                _LOGGER.error("Error creating zone: %s", err)
+    
+    @callback
+    async def async_handle_calibrate_zone(call: ServiceCall) -> None:
+        """Handle calibrate_zone service call."""
+        zone_id = call.data["zone_id"]
+        mode = call.data.get("mode", "automatic")
+        duration = call.data.get("duration", 300)
+        learn_directions = call.data.get("learn_directions", True)
+        
+        _LOGGER.info("Calibrate zone service called: %s, mode=%s, duration=%d", zone_id, mode, duration)
+        _LOGGER.warning("Zone calibration is not yet fully implemented")
+    
+    @callback
+    async def async_handle_update_zone_direction(call: ServiceCall) -> None:
+        """Handle update_zone_direction service call."""
+        zone_id = call.data["zone_id"]
+        direction_name = call.data["direction_name"]
+        vector = call.data.get("vector")
+        aliases = call.data.get("aliases", [])
+        
+        _LOGGER.info("Update zone direction service called: %s, direction=%s", zone_id, direction_name)
+        
+        for coordinator in _get_coordinators(hass):
+            try:
+                zone_manager = coordinator.get_zone_manager()
+                zone = zone_manager.get_zone(zone_id)
+                if zone:
+                    from .models import DirectionConfig
+                    direction_config = DirectionConfig(
+                        name=direction_name,
+                        vector=tuple(vector) if vector else (0.0, 0.0),
+                        aliases=aliases,
+                    )
+                    # Update zone's directions
+                    zone.known_directions.append(direction_config)
+                    _LOGGER.info("Zone direction updated: %s", zone_id)
+                    break
+            except Exception as err:
+                _LOGGER.error("Error updating zone direction: %s", err)
+    
+    @callback
+    async def async_handle_test_zone_trigger(call: ServiceCall) -> None:
+        """Handle test_zone_trigger service call."""
+        zone_id = call.data["zone_id"]
+        direction = call.data["direction"]
+        confidence = call.data.get("confidence", 0.95)
+        duration = call.data.get("duration", 2000)
+        
+        _LOGGER.info("Test zone trigger service called: %s, direction=%s", zone_id, direction)
+        _LOGGER.warning("Zone trigger testing is not yet fully implemented")
+    
+    @callback
+    async def async_handle_analyze_zone_patterns(call: ServiceCall) -> None:
+        """Handle analyze_zone_patterns service call."""
+        zone_id = call.data.get("zone_id")
+        min_confidence = call.data.get("min_confidence", 0.7)
+        
+        _LOGGER.info("Analyze zone patterns service called: zone=%s", zone_id)
+        
+        for coordinator in _get_coordinators(hass):
+            try:
+                pattern_analyzer = coordinator.get_pattern_analyzer()
+                stats = pattern_analyzer.get_pattern_statistics()
+                _LOGGER.info("Zone pattern analysis: %s", stats)
+            except Exception as err:
+                _LOGGER.error("Error analyzing zone patterns: %s", err)
+    
+    @callback
+    async def async_handle_learn_zone_directions(call: ServiceCall) -> None:
+        """Handle learn_zone_directions service call."""
+        zone_id = call.data["zone_id"]
+        learning_period = call.data.get("learning_period", 86400)
+        min_samples = call.data.get("min_samples", 20)
+        update_config = call.data.get("update_config", True)
+        
+        _LOGGER.info("Learn zone directions service called: %s, period=%d", zone_id, learning_period)
+        _LOGGER.warning("Zone direction learning is not yet fully implemented")
+    
+    # Cue service handlers
+    @callback
+    async def async_handle_add_secondary_cue(call: ServiceCall) -> None:
+        """Handle add_secondary_cue service call."""
+        floorplan_id = call.data["floorplan_id"]
+        entity_id = call.data["entity_id"]
+        cue_type = call.data["cue_type"]
+        position = tuple(call.data["position"])
+        correlation_window = call.data.get("correlation_window", 3000)
+        confidence_weight = call.data.get("confidence_weight", 0.7)
+        
+        _LOGGER.info("Add secondary cue service called: %s, type=%s", entity_id, cue_type)
+        
+        coordinators = _get_coordinators(hass, floorplan_id)
+        for coordinator in coordinators:
+            try:
+                from .models import SecondaryCue, CueTypeRegistry
+                
+                # Get default hints for cue type
+                default_hints = CueTypeRegistry.get_default_hints(cue_type)
+                
+                cue = SecondaryCue(
+                    id=f"cue_{entity_id.replace('.', '_')}",
+                    name=entity_id.split('.')[-1].replace('_', ' ').title(),
+                    entity_id=entity_id,
+                    cue_type=cue_type,
+                    position=position,
+                    directional_hints=[],  # Would be configured via configure_cue_hints
+                    correlation_window=correlation_window,
+                    confidence_weight=confidence_weight,
+                )
+                coordinator.get_hybrid_detector().add_cue(cue)
+                _LOGGER.info("Secondary cue added: %s", cue.id)
+            except Exception as err:
+                _LOGGER.error("Error adding secondary cue: %s", err)
+    
+    @callback
+    async def async_handle_configure_cue_hints(call: ServiceCall) -> None:
+        """Handle configure_cue_hints service call."""
+        cue_id = call.data["cue_id"]
+        hints = call.data["hints"]
+        
+        _LOGGER.info("Configure cue hints service called: %s, hints=%d", cue_id, len(hints))
+        _LOGGER.warning("Cue hint configuration is not yet fully implemented")
+    
+    @callback
+    async def async_handle_analyze_cue_correlations(call: ServiceCall) -> None:
+        """Handle analyze_cue_correlations service call."""
+        floorplan_id = call.data["floorplan_id"]
+        min_correlation = call.data.get("min_correlation", 0.5)
+        include_suggestions = call.data.get("include_suggestions", True)
+        
+        _LOGGER.info("Analyze cue correlations service called: %s", floorplan_id)
+        _LOGGER.warning("Cue correlation analysis is not yet fully implemented")
+    
+    @callback
+    async def async_handle_learn_cue_patterns(call: ServiceCall) -> None:
+        """Handle learn_cue_patterns service call."""
+        floorplan_id = call.data["floorplan_id"]
+        learning_duration = call.data.get("learning_duration", 604800)
+        auto_apply = call.data.get("auto_apply", False)
+        confidence_threshold = call.data.get("confidence_threshold", 0.75)
+        
+        _LOGGER.info("Learn cue patterns service called: %s, duration=%d", floorplan_id, learning_duration)
+        _LOGGER.warning("Cue pattern learning is not yet fully implemented")
+    
+    @callback
+    async def async_handle_test_hybrid_detection(call: ServiceCall) -> None:
+        """Handle test_hybrid_detection service call."""
+        motion_sensor = call.data["motion_sensor"]
+        expected_direction = call.data["expected_direction"]
+        test_duration = call.data.get("test_duration", 30)
+        
+        _LOGGER.info("Test hybrid detection service called: sensor=%s, direction=%s", motion_sensor, expected_direction)
+        _LOGGER.warning("Hybrid detection testing is not yet fully implemented")
+    
+    # Analysis service handlers
+    @callback
+    async def async_handle_analyze_pattern(call: ServiceCall) -> None:
+        """Handle analyze_pattern service call."""
+        pattern_type = call.data.get("pattern_type", "all")
+        min_confidence = call.data.get("min_confidence", 0.6)
+        floorplan_id = call.data.get("floorplan_id")
+        
+        _LOGGER.info("Analyze pattern service called: type=%s, min_confidence=%.2f", pattern_type, min_confidence)
+        
+        coordinators = _get_coordinators(hass, floorplan_id)
+        for coordinator in coordinators:
+            try:
+                pattern_analyzer = coordinator.get_pattern_analyzer()
+                stats = pattern_analyzer.get_pattern_statistics()
+                _LOGGER.info("Pattern analysis results: %s", stats)
+            except Exception as err:
+                _LOGGER.error("Error analyzing patterns: %s", err)
+    
+    @callback
+    async def async_handle_generate_report(call: ServiceCall) -> None:
+        """Handle generate_report service call."""
+        floorplan_id = call.data["floorplan_id"]
+        report_type = call.data.get("report_type", "daily")
+        output_format = call.data.get("output_format", "json")
+        include_zones = call.data.get("include_zones", True)
+        include_cues = call.data.get("include_cues", True)
+        include_patterns = call.data.get("include_patterns", True)
+        
+        _LOGGER.info("Generate report service called: %s, type=%s, format=%s", floorplan_id, report_type, output_format)
+        
+        coordinators = _get_coordinators(hass, floorplan_id)
+        for coordinator in coordinators:
+            try:
+                # Gather report data
+                report_data = {
+                    "floorplan_id": coordinator.floorplan_id,
+                    "report_type": report_type,
+                    "timestamp": coordinator.data.get("timestamp").isoformat() if coordinator.data else None,
+                }
+                
+                if include_patterns:
+                    pattern_analyzer = coordinator.get_pattern_analyzer()
+                    report_data["patterns"] = pattern_analyzer.get_pattern_statistics()
+                
+                if include_zones:
+                    report_data["zones"] = {"count": len(coordinator.get_zone_manager().zones)}
+                
+                if include_cues:
+                    report_data["cues"] = {"count": coordinator.get_hybrid_detector().get_cue_count()}
+                
+                _LOGGER.info("Report generated: %s", report_data)
+                
+                # In a full implementation, would save to file/persistent storage
+                
+            except Exception as err:
+                _LOGGER.error("Error generating report: %s", err)
+    
+    # Register all services
     hass.services.async_register(
         DOMAIN,
         "calibrate",
@@ -238,7 +581,102 @@ async def async_register_services(hass: HomeAssistant) -> None:
         schema=SERVICE_SIMULATE_SCHEMA,
     )
     
-    _LOGGER.info("Motion Direction services registered")
+    # Zone services
+    hass.services.async_register(
+        DOMAIN,
+        "create_zone",
+        async_handle_create_zone,
+        schema=SERVICE_CREATE_ZONE_SCHEMA,
+    )
+    
+    hass.services.async_register(
+        DOMAIN,
+        "calibrate_zone",
+        async_handle_calibrate_zone,
+        schema=SERVICE_CALIBRATE_ZONE_SCHEMA,
+    )
+    
+    hass.services.async_register(
+        DOMAIN,
+        "update_zone_direction",
+        async_handle_update_zone_direction,
+        schema=SERVICE_UPDATE_ZONE_DIRECTION_SCHEMA,
+    )
+    
+    hass.services.async_register(
+        DOMAIN,
+        "test_zone_trigger",
+        async_handle_test_zone_trigger,
+        schema=SERVICE_TEST_ZONE_TRIGGER_SCHEMA,
+    )
+    
+    hass.services.async_register(
+        DOMAIN,
+        "analyze_zone_patterns",
+        async_handle_analyze_zone_patterns,
+        schema=SERVICE_ANALYZE_ZONE_PATTERNS_SCHEMA,
+    )
+    
+    hass.services.async_register(
+        DOMAIN,
+        "learn_zone_directions",
+        async_handle_learn_zone_directions,
+        schema=SERVICE_LEARN_ZONE_DIRECTIONS_SCHEMA,
+    )
+    
+    # Cue services
+    hass.services.async_register(
+        DOMAIN,
+        "add_secondary_cue",
+        async_handle_add_secondary_cue,
+        schema=SERVICE_ADD_SECONDARY_CUE_SCHEMA,
+    )
+    
+    hass.services.async_register(
+        DOMAIN,
+        "configure_cue_hints",
+        async_handle_configure_cue_hints,
+        schema=SERVICE_CONFIGURE_CUE_HINTS_SCHEMA,
+    )
+    
+    hass.services.async_register(
+        DOMAIN,
+        "analyze_cue_correlations",
+        async_handle_analyze_cue_correlations,
+        schema=SERVICE_ANALYZE_CUE_CORRELATIONS_SCHEMA,
+    )
+    
+    hass.services.async_register(
+        DOMAIN,
+        "learn_cue_patterns",
+        async_handle_learn_cue_patterns,
+        schema=SERVICE_LEARN_CUE_PATTERNS_SCHEMA,
+    )
+    
+    hass.services.async_register(
+        DOMAIN,
+        "test_hybrid_detection",
+        async_handle_test_hybrid_detection,
+        schema=SERVICE_TEST_HYBRID_DETECTION_SCHEMA,
+    )
+    
+    # Analysis services
+    hass.services.async_register(
+        DOMAIN,
+        "analyze_pattern",
+        async_handle_analyze_pattern,
+        schema=SERVICE_ANALYZE_PATTERN_SCHEMA,
+    )
+    
+    hass.services.async_register(
+        DOMAIN,
+        "generate_report",
+        async_handle_generate_report,
+        schema=SERVICE_GENERATE_REPORT_SCHEMA,
+    )
+    
+    _LOGGER.info("All Motion Direction services registered (16 total)")
+
 
 
 def _get_coordinators(

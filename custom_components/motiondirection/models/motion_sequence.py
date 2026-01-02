@@ -22,9 +22,9 @@ class MotionSequence:
         duration_ms: Duration of sequence in milliseconds
     """
     
-    events: List[MotionEvent] = field(default_factory=list)
     confidence: float = 0.0
     pattern_type: Optional[str] = None
+    events: List[MotionEvent] = field(default_factory=list)
     
     def __post_init__(self) -> None:
         """Sort events and calculate derived properties."""
@@ -46,7 +46,11 @@ class MotionSequence:
         """Get duration of sequence in milliseconds."""
         if len(self.events) < 2:
             return 0.0
-        delta = self.end_time - self.start_time
+        start = self.start_time
+        end = self.end_time
+        if start is None or end is None:
+            return 0.0
+        delta = end - start
         return delta.total_seconds() * 1000
     
     @property

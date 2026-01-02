@@ -4,7 +4,7 @@ from __future__ import annotations
 import logging
 import math
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict
 
 import yaml
 
@@ -47,8 +47,48 @@ class FloorplanManager:
             STORAGE_VERSION,
             f"{DOMAIN}.floorplan.{floorplan_id}",
         )
+    
+    def _sensor_dict_to_node(self, entity_id: str, config: Dict[str, Any]) -> SensorNode:
+        """Convert sensor dictionary to SensorNode object.
         
-        _LOGGER.info("FloorplanManager initialized for %s", floorplan_id)
+        Args:
+            entity_id: Sensor entity ID
+            config: Sensor configuration dictionary
+            
+        Returns:
+            SensorNode object
+        """
+        return SensorNode(
+            entity_id=entity_id,
+            position=tuple(config["position"]),
+            range=config.get("range", 50.0),
+            weight=config.get("weight", 1.0),
+            sensor_type=config.get("sensor_type", "pir"),
+            reliability=config.get("reliability", 0.95),
+            zone=config.get("zone"),
+            detection_angle=config.get("detection_angle", 120.0),
+            cooldown_period=config.get("cooldown_period", 2000),
+        )
+    
+    def _sensor_node_to_dict(self, sensor: SensorNode) -> Dict[str, Any]:
+        """Convert SensorNode object to dictionary.
+        
+        Args:
+            sensor: SensorNode object
+            
+        Returns:
+            Sensor configuration dictionary
+        """
+        return {
+            "position": list(sensor.position),
+            "range": sensor.range,
+            "weight": sensor.weight,
+            "sensor_type": sensor.sensor_type,
+            "reliability": sensor.reliability,
+            "zone": sensor.zone,
+            "detection_angle": sensor.detection_angle,
+            "cooldown_period": sensor.cooldown_period,
+        }
     
     async def async_load(self) -> Floorplan | None:
         """Load floorplan from storage.
@@ -122,7 +162,7 @@ class FloorplanManager:
         
         # Create floorplan
         self.floorplan = Floorplan(
-            floorplan_id=self.floorplan_id,
+            id=self.floorplan_id,
             name=name,
             width=width,
             height=height,
@@ -130,7 +170,7 @@ class FloorplanManager:
         )
         
         if background_image:
-            self.floorplan.background.image_path = background_image
+            self.floorplan.background.image = background_image
         
         # Save to storage
         await self.async_save()
@@ -211,12 +251,19 @@ class FloorplanManager:
             position=position,
             range=sensor_range,
             weight=weight,
-            type=sensor_type,
+            sensor_type=sensor_type,
             reliability=reliability,
         )
         
-        # Add to floorplan
-        self.floorplan.add_sensor(sensor)
+        # Add to floorplan - convert sensor to dict for storage
+        sensor_config = {
+            "position": position,
+            "range": sensor_range,
+            "weight": weight,
+            "sensor_type": sensor_type,
+            "reliability": reliability,
+        }
+        self.floorplan.add_sensor(entity_id, sensor_config)
         
         _LOGGER.info("Added sensor %s at %s", entity_id, position)
         
@@ -234,12 +281,12 @@ class FloorplanManager:
         if self.floorplan is None:
             return False
         
-        result = self.floorplan.remove_sensor(entity_id)
-        
-        if result:
+        if entity_id in self.floorplan.sensors:
+            self.floorplan.remove_sensor(entity_id)
             _LOGGER.info("Removed sensor: %s", entity_id)
+            return True
         
-        return result
+        return False
     
     def update_sensor_position(
         self,
@@ -264,9 +311,9 @@ class FloorplanManager:
         if not self._is_position_valid(position):
             raise ValueError("Position outside floorplan bounds")
         
-        sensor = self.floorplan.get_sensor(entity_id)
-        if sensor:
-            sensor.position = position
+        sensor_config = self.floorplan.get_sensor(entity_id)
+        if sensor_config:
+            sensor_config["position"] = list(position)
             _LOGGER.info("Updated sensor %s position to %s", entity_id, position)
             return True
         
@@ -284,7 +331,10 @@ class FloorplanManager:
         if self.floorplan is None:
             return None
         
-        return self.floorplan.get_sensor(entity_id)
+        sensor_config = self.floorplan.get_sensor(entity_id)
+        if sensor_config:
+            return self._sensor_dict_to_node(entity_id, sensor_config)
+        return None
     
     def get_all_sensors(self) -> list[SensorNode]:
         """Get all sensors on floorplan.
@@ -295,7 +345,10 @@ class FloorplanManager:
         if self.floorplan is None:
             return []
         
-        return self.floorplan.sensors
+        return [
+            self._sensor_dict_to_node(entity_id, config)
+            for entity_id, config in self.floorplan.sensors.items()
+        ]
     
     def detect_overlaps(
         self,
@@ -313,7 +366,7 @@ class FloorplanManager:
             return []
         
         overlaps = []
-        sensors = self.floorplan.sensors
+        sensors = self.get_all_sensors()
         
         for i, sensor1 in enumerate(sensors):
             for sensor2 in sensors[i + 1:]:
@@ -488,7 +541,7 @@ class FloorplanManager:
             Serialized data
         """
         return {
-            "floorplan_id": floorplan.floorplan_id,
+            "id": floorplan.id,
             "name": floorplan.name,
             "width": floorplan.width,
             "height": floorplan.height,
@@ -499,20 +552,12 @@ class FloorplanManager:
                 "snap": floorplan.grid.snap,
             },
             "background": {
-                "image_path": floorplan.background.image_path,
+                "image": floorplan.background.image,
                 "opacity": floorplan.background.opacity,
             },
-            "sensors": [
-                {
-                    "entity_id": sensor.entity_id,
-                    "position": list(sensor.position),
-                    "range": sensor.range,
-                    "weight": sensor.weight,
-                    "type": sensor.type,
-                    "reliability": sensor.reliability,
-                }
-                for sensor in floorplan.sensors
-            ],
+            "sensors": floorplan.sensors,
+            "zones": floorplan.zones,
+            "secondary_cues": floorplan.secondary_cues,
         }
     
     @staticmethod
@@ -526,7 +571,7 @@ class FloorplanManager:
             Deserialized floorplan
         """
         floorplan = Floorplan(
-            floorplan_id=data["floorplan_id"],
+            id=data["id"],
             name=data["name"],
             width=data["width"],
             height=data["height"],
@@ -541,19 +586,12 @@ class FloorplanManager:
         
         # Set background configuration
         if "background" in data:
-            floorplan.background.image_path = data["background"].get("image_path")
+            floorplan.background.image = data["background"].get("image")
             floorplan.background.opacity = data["background"].get("opacity", 0.5)
         
-        # Add sensors
-        for sensor_data in data.get("sensors", []):
-            sensor = SensorNode(
-                entity_id=sensor_data["entity_id"],
-                position=tuple(sensor_data["position"]),
-                range=sensor_data.get("range", 5.0),
-                weight=sensor_data.get("weight", 1.0),
-                type=sensor_data.get("type", "motion"),
-                reliability=sensor_data.get("reliability", 0.8),
-            )
-            floorplan.add_sensor(sensor)
+        # Add sensors, zones, and cues directly as dictionaries
+        floorplan.sensors = data.get("sensors", {})
+        floorplan.zones = data.get("zones", {})
+        floorplan.secondary_cues = data.get("secondary_cues", {})
         
         return floorplan

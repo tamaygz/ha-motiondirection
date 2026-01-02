@@ -49,7 +49,7 @@ class TriggerZoneManager:
         Args:
             zone: Zone to add
         """
-        self.zones[zone.zone_id] = zone
+        self.zones[zone.id] = zone
         _LOGGER.info("Added zone: %s", zone.name)
     
     def remove_zone(self, zone_id: str) -> bool:
@@ -148,7 +148,7 @@ class TriggerZoneManager:
         
         # Create transition
         transition = ZoneTransition(
-            zone_id=zone.zone_id,
+            zone_id=zone.id,
             direction=best_match,
             entry_point=entry_point,
             exit_point=exit_point,
@@ -181,7 +181,7 @@ class TriggerZoneManager:
         Returns:
             List of detected transitions
         """
-        transitions = []
+        transitions: list[ZoneTransition] = []
         
         # Convert sequence to motion path
         # This would require creating PathPoints from MotionEvents

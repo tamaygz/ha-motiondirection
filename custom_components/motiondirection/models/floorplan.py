@@ -340,7 +340,7 @@ class Floorplan:
             scale=data.get("scale", 10.0),
             background=background,
             grid=grid,
-            layers=layers or cls.layers.default_factory(),
+            layers=layers or [],
             sensors=data.get("sensors", {}),
             zones=data.get("zones", {}),
             secondary_cues=data.get("secondary_cues", {}),
