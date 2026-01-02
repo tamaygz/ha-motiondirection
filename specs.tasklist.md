@@ -320,10 +320,12 @@
 ---
 
 ### 5.2 Zone Drawing and Creation
-**Status:** 🔴 Not Started  
+**Status:** 🔴 Phase 2 - Planned  
 **Complexity:** Medium  
 **Specs Reference:** Lines 1273-1287  
-**Description:** Implement zone polygon drawing and configuration.
+**Description:** Implement interactive zone polygon drawing and configuration UI (Phase 2 enhancement).
+
+**Note:** Core zone functionality is FULLY IMPLEMENTED via services and YAML configuration. Zones can be created using `motiondirection.create_zone` service or YAML config. This task provides graphical/interactive zone editing for user convenience and is part of the broader Zone Editor Card (12.3).
 
 **Tasks:**
 - [ ] Implement polygon drawing interface (click to add points)
@@ -336,7 +338,7 @@
 - [ ] Implement zone deletion
 - [ ] Implement zone visibility toggle
 
-**Dependencies:** 5.1, 4.1
+**Dependencies:** 5.1, 4.1, 12.1, 12.3
 
 ---
 
