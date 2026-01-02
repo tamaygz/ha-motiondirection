@@ -1,0 +1,62 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Motion Direction Detection",
+        "description": "Set up motion direction detection for your home",
+        "data": {
+          "name": "Configuration name"
+        }
+      },
+      "floorplan": {
+        "title": "Create Floorplan",
+        "description": "Define your floorplan dimensions and settings",
+        "data": {
+          "name": "Floorplan name",
+          "width": "Width (pixels)",
+          "height": "Height (pixels)",
+          "scale": "Scale (pixels per meter)",
+          "background_image": "Background image path (optional)"
+        }
+      },
+      "sensors": {
+        "title": "Place Motion Sensors",
+        "description": "Select and position your motion sensors"
+      },
+      "cues": {
+        "title": "Add Secondary Cues (Optional)",
+        "description": "Add doors, lights, or other sensors to improve detection"
+      },
+      "zones": {
+        "title": "Define Zones (Optional)",
+        "description": "Create zones for directional triggers"
+      },
+      "calibrate": {
+        "title": "Calibrate System",
+        "description": "Run calibration to optimize detection (recommended)"
+      }
+    },
+    "error": {
+      "cannot_connect": "Failed to connect to Home Assistant",
+      "invalid_config": "Invalid configuration",
+      "unknown": "Unexpected error occurred"
+    },
+    "abort": {
+      "already_configured": "This integration is already configured"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Motion Direction Options",
+        "data": {
+          "time_window": "Time window (milliseconds)",
+          "confidence_threshold": "Confidence threshold (0-1)",
+          "enable_secondary_cues": "Enable secondary cues",
+          "enable_pattern_learning": "Enable pattern learning",
+          "history_retention_days": "History retention (days)"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,546 @@
+# Core Services
+calibrate:
+  name: Calibrate
+  description: Calibrate motion detection system
+  fields:
+    floorplan_id:
+      name: Floorplan ID
+      description: ID of the floorplan to calibrate
+      example: "ground_floor"
+      selector:
+        text:
+    mode:
+      name: Mode
+      description: Calibration mode
+      default: "automatic"
+      selector:
+        select:
+          options:
+            - "automatic"
+            - "manual"
+            - "guided"
+    duration:
+      name: Duration
+      description: Calibration duration in seconds
+      default: 300
+      selector:
+        number:
+          min: 60
+          max: 3600
+          unit_of_measurement: "s"
+    calibration_type:
+      name: Calibration Type
+      description: What to calibrate
+      default: "all"
+      selector:
+        select:
+          options:
+            - "sensors"
+            - "zones"
+            - "cues"
+            - "all"
+
+clear_history:
+  name: Clear History
+  description: Clear historical motion data
+  fields:
+    floorplan_id:
+      name: Floorplan ID
+      description: ID of the floorplan (optional, all if not specified)
+      example: "ground_floor"
+      selector:
+        text:
+    before_date:
+      name: Before Date
+      description: Clear data before this date (optional)
+      selector:
+        date:
+    entity_types:
+      name: Entity Types
+      description: Types of data to clear
+      selector:
+        select:
+          options:
+            - "motion"
+            - "zone"
+            - "cue"
+          multiple: true
+
+simulate:
+  name: Simulate Motion
+  description: Simulate a motion path for testing
+  fields:
+    floorplan_id:
+      name: Floorplan ID
+      description: ID of the floorplan
+      required: true
+      selector:
+        text:
+    include_zones:
+      name: Include Zones
+      description: Include zone detection in simulation
+      default: true
+      selector:
+        boolean:
+    include_cues:
+      name: Include Cues
+      description: Include secondary cues in simulation
+      default: false
+      selector:
+        boolean:
+
+# Zone Services
+calibrate_zone:
+  name: Calibrate Zone
+  description: Calibrate a specific zone
+  fields:
+    zone_id:
+      name: Zone ID
+      description: ID of the zone to calibrate
+      required: true
+      selector:
+        text:
+    mode:
+      name: Mode
+      description: Calibration mode
+      default: "automatic"
+      selector:
+        select:
+          options:
+            - "automatic"
+            - "manual"
+            - "guided"
+    duration:
+      name: Duration
+      description: Calibration duration in seconds
+      default: 300
+      selector:
+        number:
+          min: 60
+          max: 3600
+          unit_of_measurement: "s"
+    learn_directions:
+      name: Learn Directions
+      description: Learn direction vectors during calibration
+      default: true
+      selector:
+        boolean:
+
+create_zone:
+  name: Create Zone
+  description: Create a new trigger zone
+  fields:
+    floorplan_id:
+      name: Floorplan ID
+      description: ID of the floorplan
+      required: true
+      selector:
+        text:
+    zone_id:
+      name: Zone ID
+      description: Unique ID for the zone
+      required: true
+      selector:
+        text:
+    name:
+      name: Name
+      description: Display name for the zone
+      required: true
+      selector:
+        text:
+    min_dwell_time:
+      name: Minimum Dwell Time
+      description: Minimum time in zone to trigger (milliseconds)
+      default: 500
+      selector:
+        number:
+          min: 100
+          max: 10000
+          unit_of_measurement: "ms"
+    sensitivity:
+      name: Sensitivity
+      description: Detection sensitivity (0-1)
+      default: 0.7
+      selector:
+        number:
+          min: 0.0
+          max: 1.0
+          step: 0.1
+
+update_zone_direction:
+  name: Update Zone Direction
+  description: Update direction configuration for a zone
+  fields:
+    zone_id:
+      name: Zone ID
+      description: ID of the zone
+      required: true
+      selector:
+        text:
+    direction_name:
+      name: Direction Name
+      description: Name for this direction
+      required: true
+      selector:
+        text:
+
+test_zone_trigger:
+  name: Test Zone Trigger
+  description: Test a zone trigger manually
+  fields:
+    zone_id:
+      name: Zone ID
+      description: ID of the zone
+      required: true
+      selector:
+        text:
+    direction:
+      name: Direction
+      description: Direction to test
+      required: true
+      selector:
+        text:
+    confidence:
+      name: Confidence
+      description: Test confidence value
+      default: 0.95
+      selector:
+        number:
+          min: 0.0
+          max: 1.0
+          step: 0.01
+    duration:
+      name: Duration
+      description: Test duration in milliseconds
+      default: 2000
+      selector:
+        number:
+          min: 100
+          max: 10000
+          unit_of_measurement: "ms"
+
+analyze_zone_patterns:
+  name: Analyze Zone Patterns
+  description: Analyze motion patterns for zones
+  fields:
+    zone_id:
+      name: Zone ID
+      description: ID of the zone (optional, all zones if not specified)
+      selector:
+        text:
+    start_time:
+      name: Start Time
+      description: Start of analysis period
+      selector:
+        datetime:
+    end_time:
+      name: End Time
+      description: End of analysis period
+      selector:
+        datetime:
+    min_confidence:
+      name: Minimum Confidence
+      description: Minimum confidence threshold
+      default: 0.7
+      selector:
+        number:
+          min: 0.0
+          max: 1.0
+          step: 0.1
+
+learn_zone_directions:
+  name: Learn Zone Directions
+  description: Learn direction patterns for a zone
+  fields:
+    zone_id:
+      name: Zone ID
+      description: ID of the zone
+      required: true
+      selector:
+        text:
+    learning_period:
+      name: Learning Period
+      description: Learning period in seconds
+      default: 86400
+      selector:
+        number:
+          min: 3600
+          max: 604800
+          unit_of_measurement: "s"
+    min_samples:
+      name: Minimum Samples
+      description: Minimum samples required
+      default: 20
+      selector:
+        number:
+          min: 5
+          max: 1000
+    update_config:
+      name: Update Configuration
+      description: Automatically update zone configuration
+      default: true
+      selector:
+        boolean:
+
+# Secondary Cue Services
+add_secondary_cue:
+  name: Add Secondary Cue
+  description: Add a secondary cue device
+  fields:
+    floorplan_id:
+      name: Floorplan ID
+      description: ID of the floorplan
+      required: true
+      selector:
+        text:
+    entity_id:
+      name: Entity ID
+      description: Home Assistant entity ID
+      required: true
+      selector:
+        entity:
+    cue_type:
+      name: Cue Type
+      description: Type of secondary cue
+      required: true
+      selector:
+        select:
+          options:
+            - "door"
+            - "light"
+            - "switch"
+            - "presence"
+            - "temperature"
+            - "vibration"
+            - "power"
+            - "media"
+    correlation_window:
+      name: Correlation Window
+      description: Time window for correlation in milliseconds
+      default: 3000
+      selector:
+        number:
+          min: 500
+          max: 30000
+          unit_of_measurement: "ms"
+    confidence_weight:
+      name: Confidence Weight
+      description: Weight for confidence calculation (0-1)
+      default: 0.7
+      selector:
+        number:
+          min: 0.0
+          max: 1.0
+          step: 0.1
+
+configure_cue_hints:
+  name: Configure Cue Hints
+  description: Configure directional hints for a cue
+  fields:
+    cue_id:
+      name: Cue ID
+      description: ID of the secondary cue
+      required: true
+      selector:
+        text:
+
+analyze_cue_correlations:
+  name: Analyze Cue Correlations
+  description: Analyze correlations between cues and motion
+  fields:
+    floorplan_id:
+      name: Floorplan ID
+      description: ID of the floorplan
+      required: true
+      selector:
+        text:
+    start_time:
+      name: Start Time
+      description: Start of analysis period
+      selector:
+        datetime:
+    end_time:
+      name: End Time
+      description: End of analysis period
+      selector:
+        datetime:
+    min_correlation:
+      name: Minimum Correlation
+      description: Minimum correlation strength
+      default: 0.5
+      selector:
+        number:
+          min: 0.0
+          max: 1.0
+          step: 0.1
+    include_suggestions:
+      name: Include Suggestions
+      description: Include suggestions for new cues
+      default: true
+      selector:
+        boolean:
+
+learn_cue_patterns:
+  name: Learn Cue Patterns
+  description: Learn patterns from secondary cues
+  fields:
+    floorplan_id:
+      name: Floorplan ID
+      description: ID of the floorplan
+      required: true
+      selector:
+        text:
+    learning_duration:
+      name: Learning Duration
+      description: Duration for pattern learning in seconds
+      default: 604800
+      selector:
+        number:
+          min: 86400
+          max: 2592000
+          unit_of_measurement: "s"
+    auto_apply:
+      name: Auto Apply
+      description: Automatically apply learned patterns
+      default: false
+      selector:
+        boolean:
+    confidence_threshold:
+      name: Confidence Threshold
+      description: Minimum confidence for learned patterns
+      default: 0.75
+      selector:
+        number:
+          min: 0.5
+          max: 1.0
+          step: 0.05
+
+test_hybrid_detection:
+  name: Test Hybrid Detection
+  description: Test hybrid detection with motion and cues
+  fields:
+    motion_sensor:
+      name: Motion Sensor
+      description: Motion sensor entity ID
+      required: true
+      selector:
+        entity:
+          domain: binary_sensor
+    expected_direction:
+      name: Expected Direction
+      description: Expected direction for validation
+      required: true
+      selector:
+        text:
+    test_duration:
+      name: Test Duration
+      description: Test duration in seconds
+      default: 30
+      selector:
+        number:
+          min: 10
+          max: 300
+          unit_of_measurement: "s"
+
+# Analysis Services
+analyze_pattern:
+  name: Analyze Pattern
+  description: Analyze motion patterns
+  fields:
+    start_time:
+      name: Start Time
+      description: Start of analysis period
+      required: true
+      selector:
+        datetime:
+    end_time:
+      name: End Time
+      description: End of analysis period
+      required: true
+      selector:
+        datetime:
+    pattern_type:
+      name: Pattern Type
+      description: Type of pattern to analyze
+      default: "all"
+      selector:
+        select:
+          options:
+            - "linear"
+            - "circular"
+            - "zone_transition"
+            - "all"
+    min_confidence:
+      name: Minimum Confidence
+      description: Minimum confidence threshold
+      default: 0.6
+      selector:
+        number:
+          min: 0.0
+          max: 1.0
+          step: 0.1
+    floorplan_id:
+      name: Floorplan ID
+      description: ID of the floorplan
+      selector:
+        text:
+
+generate_report:
+  name: Generate Report
+  description: Generate motion analysis report
+  fields:
+    floorplan_id:
+      name: Floorplan ID
+      description: ID of the floorplan
+      required: true
+      selector:
+        text:
+    report_type:
+      name: Report Type
+      description: Type of report
+      default: "daily"
+      selector:
+        select:
+          options:
+            - "daily"
+            - "weekly"
+            - "monthly"
+            - "custom"
+    start_date:
+      name: Start Date
+      description: Report start date
+      selector:
+        date:
+    end_date:
+      name: End Date
+      description: Report end date
+      selector:
+        date:
+    include_zones:
+      name: Include Zones
+      description: Include zone statistics
+      default: true
+      selector:
+        boolean:
+    include_cues:
+      name: Include Cues
+      description: Include cue analysis
+      default: true
+      selector:
+        boolean:
+    include_patterns:
+      name: Include Patterns
+      description: Include pattern analysis
+      default: true
+      selector:
+        boolean:
+    output_format:
+      name: Output Format
+      description: Report output format
+      default: "pdf"
+      selector:
+        select:
+          options:
+            - "pdf"
+            - "json"
+            - "yaml"
