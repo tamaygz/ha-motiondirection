@@ -4,6 +4,7 @@ from typing import Final
 
 # Integration domain
 DOMAIN: Final = "motiondirection"
+INTEGRATION_VERSION: Final = "0.1.0"
 
 # Configuration keys
 CONF_FLOORPLAN_ID: Final = "floorplan_id"

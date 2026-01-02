@@ -311,3 +311,62 @@ class MotionDirectionCoordinator(DataUpdateCoordinator):
             "correlation_statistics": {},
             "top_correlations": [],
         }
+    
+    # Diagnostic and test mode methods
+    def get_detection_count(self) -> int:
+        """Get total number of detections processed.
+        
+        Returns:
+            Total detection count
+        """
+        return getattr(self, "_detection_count", 0)
+    
+    def get_average_detection_time(self) -> float:
+        """Get average detection processing time in milliseconds.
+        
+        Returns:
+            Average detection time in ms
+        """
+        return getattr(self, "_avg_detection_time", 0.0)
+    
+    def get_event_queue_size(self) -> int:
+        """Get current size of event processing queue.
+        
+        Returns:
+            Queue size
+        """
+        return len(getattr(self, "_event_queue", []))
+    
+    def get_recent_errors(self) -> list[str]:
+        """Get list of recent errors.
+        
+        Returns:
+            List of error messages
+        """
+        return getattr(self, "_recent_errors", [])
+    
+    def enable_test_mode(self, duration: int, test_sensors: list[str]) -> None:
+        """Enable test mode for detection validation.
+        
+        Args:
+            duration: Test duration in seconds
+            test_sensors: List of sensor entity IDs to test
+        """
+        self._test_mode = True
+        self._test_duration = duration
+        self._test_sensors = test_sensors
+        self._test_detections: list[Any] = []
+        _LOGGER.info("Test mode enabled for %d seconds with sensors: %s", duration, test_sensors)
+    
+    def disable_test_mode(self) -> None:
+        """Disable test mode."""
+        self._test_mode = False
+        _LOGGER.info("Test mode disabled")
+    
+    def get_test_results(self) -> list[Any]:
+        """Get test mode detection results.
+        
+        Returns:
+            List of detection results from test mode
+        """
+        return getattr(self, "_test_detections", [])

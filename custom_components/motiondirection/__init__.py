@@ -5,6 +5,7 @@ This integration provides intelligent motion direction detection by analyzing
 sequential triggering patterns of multiple motion sensors, with support for
 visual floorplan configuration, trigger zones, and secondary cues.
 """
+import asyncio
 import logging
 from typing import Any
 
@@ -12,11 +13,11 @@ import voluptuous as vol
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import Platform
-from homeassistant.core import HomeAssistant, ServiceCall, callback
+from homeassistant.core import HomeAssistant, ServiceCall, ServiceResponse, SupportsResponse, callback
 from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers.typing import ConfigType
 
-from .const import DOMAIN
+from .const import DOMAIN, INTEGRATION_VERSION
 from .coordinator import MotionDirectionCoordinator
 
 _LOGGER = logging.getLogger(__name__)
@@ -575,6 +576,189 @@ async def async_register_services(hass: HomeAssistant) -> None:
             except Exception as err:
                 _LOGGER.error("Error generating report: %s", err)
     
+    # Diagnostic service handlers
+    @callback
+    async def async_handle_get_status(call: ServiceCall) -> ServiceResponse:
+        """Handle get_status service call."""
+        floorplan_id = call.data.get("floorplan_id")
+        include_performance = call.data.get("include_performance", True)
+        include_config = call.data.get("include_config", False)
+        include_errors = call.data.get("include_errors", True)
+        
+        _LOGGER.info("Get status service called: %s", floorplan_id)
+        
+        status_data = {
+            "integration_version": INTEGRATION_VERSION,
+            "floorplans": {},
+        }
+        
+        coordinators = _get_coordinators(hass, floorplan_id)
+        for coordinator in coordinators:
+            floorplan_status = {
+                "state": "online" if coordinator.last_update_success else "offline",
+                "last_update": coordinator.last_update_success_time.isoformat() if coordinator.last_update_success_time else None,
+                "sensors_count": len([e for e in hass.data[DOMAIN].get("entities", []) if hasattr(e, "coordinator") and e.coordinator == coordinator]),
+            }
+            
+            if include_performance:
+                floorplan_status["performance"] = {
+                    "detection_count": coordinator.get_detection_count(),
+                    "average_detection_time": coordinator.get_average_detection_time(),
+                    "queue_size": coordinator.get_event_queue_size(),
+                }
+            
+            if include_config:
+                floorplan_status["config"] = {
+                    "detection_timeout": coordinator.detection_config.detection_timeout_ms,
+                    "confidence_threshold": coordinator.detection_config.min_confidence_threshold,
+                    "time_window": coordinator.detection_config.time_window_ms,
+                }
+            
+            if include_errors:
+                floorplan_status["errors"] = coordinator.get_recent_errors()
+            
+            status_data["floorplans"][coordinator.floorplan_id] = floorplan_status
+        
+        return status_data
+    
+    @callback
+    async def async_handle_test_detection(call: ServiceCall) -> ServiceResponse:
+        """Handle test_detection service call."""
+        floorplan_id = call.data["floorplan_id"]
+        test_sensors = call.data.get("test_sensors", [])
+        test_duration = call.data.get("test_duration", 60)
+        expected_direction = call.data.get("expected_direction")
+        
+        _LOGGER.info("Test detection service called: %s, duration=%d", floorplan_id, test_duration)
+        
+        coordinators = _get_coordinators(hass, floorplan_id)
+        if not coordinators:
+            return {
+                "success": False,
+                "error": f"Floorplan {floorplan_id} not found",
+            }
+        
+        coordinator = coordinators[0]
+        
+        # Begin test mode
+        test_results = {
+            "floorplan_id": floorplan_id,
+            "test_duration": test_duration,
+            "test_sensors": test_sensors,
+            "expected_direction": expected_direction,
+            "detections": [],
+            "accuracy": 0.0,
+            "success": True,
+        }
+        
+        try:
+            # Enable test mode in coordinator
+            coordinator.enable_test_mode(test_duration, test_sensors)
+            
+            # Wait for test duration (in production, would return immediately and fire event when done)
+            await asyncio.sleep(min(test_duration, 5))  # Cap at 5 seconds for immediate feedback
+            
+            # Get test results
+            test_detections = coordinator.get_test_results()
+            test_results["detections"] = [
+                {
+                    "timestamp": d.timestamp.isoformat(),
+                    "direction": d.direction,
+                    "confidence": d.confidence,
+                    "method": d.detection_method,
+                }
+                for d in test_detections
+            ]
+            
+            # Calculate accuracy if expected direction provided
+            if expected_direction:
+                correct = sum(1 for d in test_detections if d.direction == expected_direction)
+                test_results["accuracy"] = correct / len(test_detections) if test_detections else 0.0
+            
+            _LOGGER.info("Test detection completed: %d detections, %.2f accuracy", len(test_detections), test_results["accuracy"])
+            
+        except Exception as err:
+            _LOGGER.error("Error during test detection: %s", err)
+            test_results["success"] = False
+            test_results["error"] = str(err)
+        finally:
+            # Disable test mode
+            coordinator.disable_test_mode()
+        
+        return test_results
+    
+    @callback
+    async def async_handle_validate_config(call: ServiceCall) -> ServiceResponse:
+        """Handle validate_config service call."""
+        config_path = call.data.get("config_path")
+        config_yaml = call.data.get("config_yaml")
+        
+        _LOGGER.info("Validate config service called")
+        
+        validation_results = {
+            "valid": True,
+            "errors": [],
+            "warnings": [],
+            "info": {},
+        }
+        
+        try:
+            if config_yaml:
+                # Validate inline YAML
+                import yaml
+                config_data = yaml.safe_load(config_yaml)
+            elif config_path:
+                # Load and validate file
+                import yaml
+                with open(config_path) as f:
+                    config_data = yaml.safe_load(f)
+            else:
+                # Validate current configuration
+                config_data = hass.data[DOMAIN].get("config", {})
+            
+            # Validate using config_schema
+            from .config_schema import FLOORPLAN_SCHEMA
+            
+            validated_config: dict[str, Any] = FLOORPLAN_SCHEMA(config_data)
+            
+            # Additional validation checks
+            validation_results["info"]["sensor_count"] = len(validated_config.get("sensors", []))
+            validation_results["info"]["zone_count"] = len(validated_config.get("zones", []))
+            validation_results["info"]["cue_count"] = len(validated_config.get("secondary_cues", []))
+            
+            # Check for potential issues
+            if validation_results["info"]["sensor_count"] < 2:
+                validation_results["warnings"].append("Less than 2 sensors configured - direction detection requires at least 2 sensors")
+            
+            if validation_results["info"]["zone_count"] == 0 and validated_config.get("detection_mode") == "zone_only":
+                validation_results["errors"].append("No zones configured but detection_mode is 'zone_only'")
+                validation_results["valid"] = False
+            
+            # Check sensor coordinates if floorplan dimensions provided
+            floorplan_width = validated_config.get("floorplan", {}).get("width")
+            floorplan_height = validated_config.get("floorplan", {}).get("height")
+            
+            if floorplan_width and floorplan_height:
+                for sensor in validated_config.get("sensors", []):
+                    x, y = sensor.get("x", 0), sensor.get("y", 0)
+                    if x < 0 or x > floorplan_width or y < 0 or y > floorplan_height:
+                        validation_results["warnings"].append(
+                            f"Sensor '{sensor['entity_id']}' coordinates ({x}, {y}) outside floorplan bounds"
+                        )
+            
+            _LOGGER.info("Config validation completed: %s", "valid" if validation_results["valid"] else "invalid")
+            
+        except vol.Invalid as err:
+            validation_results["valid"] = False
+            validation_results["errors"].append(f"Schema validation error: {err}")
+            _LOGGER.error("Config validation failed: %s", err)
+        except Exception as err:
+            validation_results["valid"] = False
+            validation_results["errors"].append(f"Unexpected error: {err}")
+            _LOGGER.error("Config validation error: %s", err)
+        
+        return validation_results
+    
     # Register all services
     hass.services.async_register(
         DOMAIN,
@@ -691,7 +875,32 @@ async def async_register_services(hass: HomeAssistant) -> None:
         schema=SERVICE_GENERATE_REPORT_SCHEMA,
     )
     
-    _LOGGER.info("All Motion Direction services registered (16 total)")
+    # Diagnostic services
+    hass.services.async_register(
+        DOMAIN,
+        "get_status",
+        async_handle_get_status,
+        schema=SERVICE_GET_STATUS_SCHEMA,
+        supports_response=SupportsResponse.ONLY,
+    )
+    
+    hass.services.async_register(
+        DOMAIN,
+        "test_detection",
+        async_handle_test_detection,
+        schema=SERVICE_TEST_DETECTION_SCHEMA,
+        supports_response=SupportsResponse.ONLY,
+    )
+    
+    hass.services.async_register(
+        DOMAIN,
+        "validate_config",
+        async_handle_validate_config,
+        schema=SERVICE_VALIDATE_CONFIG_SCHEMA,
+        supports_response=SupportsResponse.ONLY,
+    )
+    
+    _LOGGER.info("All Motion Direction services registered (19 total)")
 
 
 

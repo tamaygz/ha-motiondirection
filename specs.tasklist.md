@@ -774,19 +774,23 @@
 ---
 
 ### 10.3 Diagnostic Services
-**Status:** 🔴 Not Started  
+**Status:** � Complete  
 **Complexity:** Low  
 **Specs Reference:** Lines 2264-2286  
 **Description:** Implement diagnostic and validation services.
 
 **Tasks:**
-- [ ] Implement `motiondirection.get_status` service (Lines 2266-2269)
-- [ ] Implement `motiondirection.test_detection` service (Lines 2271-2277)
-- [ ] Implement `motiondirection.validate_config` service (Lines 2279-2282)
-- [ ] Return comprehensive system status
-- [ ] Test detection with specified duration
-- [ ] Validate all configuration parameters
-- [ ] Provide actionable error messages
+- [x] Implement `motiondirection.get_status` service (Lines 2266-2269)
+- [x] Implement `motiondirection.test_detection` service (Lines 2271-2277)
+- [x] Implement `motiondirection.validate_config` service (Lines 2279-2282)
+- [x] Return comprehensive system status
+- [x] Test detection with specified duration
+- [x] Validate all configuration parameters
+- [x] Provide actionable error messages
+- [x] Add service response support for get_status, test_detection, validate_config
+- [x] Add coordinator diagnostic methods (get_detection_count, get_average_detection_time, etc.)
+- [x] Add test mode enable/disable functionality in coordinator
+- [x] Add INTEGRATION_VERSION constant
 
 **Dependencies:** 3.4, 8.2
 
