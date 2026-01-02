@@ -72,94 +72,96 @@
 ## 2. Core Models & Data Structures
 
 ### 2.1 Basic Data Models
-**Status:** 🔴 Not Started  
+**Status:** � Complete  
 **Complexity:** Medium  
 **Specs Reference:** Lines 29-63, 267-340  
 **Description:** Implement fundamental dataclasses for sensors, events, and paths.
 
 **Tasks:**
-- [ ] Create `models/sensor_node.py` with SensorNode dataclass (position, range, weight, type, reliability)
-- [ ] Create `models/motion_event.py` with MotionEvent dataclass (sensor, timestamp, state, confidence)
-- [ ] Create `models/motion_path.py` with MotionPath dataclass (points, sequence, confidence)
-- [ ] Create `models/motion_sequence.py` with MotionSequence dataclass
-- [ ] Add type hints and validation for all models
-- [ ] Add `__str__` and `__repr__` methods for debugging
+- [x] Create `models/sensor_node.py` with SensorNode dataclass (position, range, weight, type, reliability)
+- [x] Create `models/motion_event.py` with MotionEvent dataclass (sensor, timestamp, state, confidence)
+- [x] Create `models/motion_path.py` with MotionPath dataclass (points, sequence, confidence)
+- [x] Create `models/motion_sequence.py` with MotionSequence dataclass
+- [x] Add type hints and validation for all models
+- [x] Add `__str__` and `__repr__` methods for debugging
 
 **Dependencies:** 1.2
 
 ---
 
 ### 2.2 Floorplan Model
-**Status:** 🔴 Not Started  
+**Status:** � Complete  
 **Complexity:** Medium  
 **Specs Reference:** Lines 225-265, 905-1020  
 **Description:** Implement floorplan configuration and management dataclass.
 
 **Tasks:**
-- [ ] Create `models/floorplan.py` with Floorplan dataclass
-- [ ] Implement dimensions, scale, background image properties
-- [ ] Implement grid configuration (enabled, size, snap)
-- [ ] Implement layer management (background, sensors, cues, zones, paths)
-- [ ] Implement sensor list management
-- [ ] Implement zone list management
-- [ ] Implement secondary cue list management
-- [ ] Add import/export methods (YAML/JSON)
+- [x] Create `models/floorplan.py` with Floorplan dataclass
+- [x] Implement dimensions, scale, background image properties
+- [x] Implement grid configuration (enabled, size, snap)
+- [x] Implement layer management (background, sensors, cues, zones, paths)
+- [x] Implement sensor list management
+- [x] Implement zone list management
+- [x] Implement secondary cue list management
+- [x] Add import/export methods (YAML/JSON)
 
 **Dependencies:** 2.1
 
 ---
 
 ### 2.3 Trigger Zone Models
-**Status:** 🔴 Not Started  
+**Status:** � Complete  
 **Complexity:** High  
 **Specs Reference:** Lines 267-340  
 **Description:** Implement zone-related dataclasses with polygon geometry.
 
 **Tasks:**
-- [ ] Create `models/trigger_zone_model.py` with TriggerZone dataclass
-- [ ] Implement polygon boundary storage and validation
-- [ ] Implement DirectionConfig dataclass (name, vector, entry_edge, exit_edge, aliases)
-- [ ] Implement `calculate_center()` method for polygon centroid
-- [ ] Implement `contains_point()` method using ray casting algorithm (Lines 303-316)
-- [ ] Implement `matches_vector()` method for direction matching (Lines 330-338)
-- [ ] Add zone state management (idle, occupied, transit)
-- [ ] Add min_dwell_time, max_transit_time, sensitivity properties
+- [x] Create `models/trigger_zone_model.py` with TriggerZone dataclass
+- [x] Implement polygon boundary storage and validation
+- [x] Implement DirectionConfig dataclass (name, vector, entry_edge, exit_edge, aliases)
+- [x] Implement `calculate_center()` method for polygon centroid
+- [x] Implement `contains_point()` method using ray casting algorithm (Lines 303-316)
+- [x] Implement `matches_vector()` method for direction matching (Lines 330-338)
+- [x] Add zone state management (idle, occupied, transit)
+- [x] Add min_dwell_time, max_transit_time, sensitivity properties
 
 **Dependencies:** 2.1
 
 ---
 
 ### 2.4 Secondary Cue Models
-**Status:** 🔴 Not Started  
+**Status:** � Complete  
 **Complexity:** Medium  
 **Specs Reference:** Lines 425-479  
 **Description:** Implement secondary cue system dataclasses.
 
 **Tasks:**
-- [ ] Create `models/secondary_cue_model.py` with SecondaryCue dataclass
-- [ ] Implement DirectionalHint dataclass (state_change, implied_direction, confidence, condition)
-- [ ] Implement StateChange dataclass (from_state, to_state, attribute)
-- [ ] Add timing configuration (correlation_window, pre_trigger_window, post_trigger_window)
-- [ ] Add confidence weights (confidence_weight, reliability)
-- [ ] Add state configuration (trigger_states, ignore_states)
-- [ ] Add visual configuration (icon, color, range_radius)
-- [ ] Add cue type validation
+- [x] Create `models/secondary_cue_model.py` with SecondaryCue dataclass
+- [x] Implement DirectionalHint dataclass (state_change, implied_direction, confidence, condition)
+- [x] Implement StateChange dataclass (from_state, to_state, attribute)
+- [x] Add timing configuration (correlation_window, pre_trigger_window, post_trigger_window)
+- [x] Add confidence weights (confidence_weight, reliability)
+- [x] Add state configuration (trigger_states, ignore_states)
+- [x] Add visual configuration (icon, color, range_radius)
+- [x] Add cue type validation
+- [x] Create `models/cue_type_registry.py` with CueTypeRegistry class
 
 **Dependencies:** 2.1
 
 ---
 
 ### 2.5 Pattern Models
-**Status:** 🔴 Not Started  
+**Status:** � Complete  
 **Complexity:** Low  
 **Specs Reference:** Lines 737-903  
 **Description:** Implement pattern analysis dataclasses.
 
 **Tasks:**
-- [ ] Create `models/pattern.py` with PatternType enum (linear, circular, zone_transition, stationary, random, anomaly)
-- [ ] Create LearnedPattern dataclass (signature, occurrences, confidence, example)
-- [ ] Create ZoneTransition dataclass (zone_id, direction, entry_point, exit_point, dwell_time, confidence)
-- [ ] Create DirectionResult dataclass (direction, confidence, method, contributing_cues)
+- [x] Create `models/pattern_models.py` with PatternType enum (linear, circular, zone_transition, stationary, random, anomaly)
+- [x] Create LearnedPattern dataclass (signature, occurrences, confidence, example)
+- [x] Create ZoneTransition dataclass (zone_id, direction, entry_point, exit_point, dwell_time, confidence)
+- [x] Create DirectionResult dataclass (direction, confidence, method, contributing_cues)
+- [x] Update models/__init__.py to export all pattern models
 
 **Dependencies:** 2.1, 2.3, 2.4
 
