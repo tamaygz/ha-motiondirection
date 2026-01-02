@@ -72,7 +72,7 @@ class MotionDirectionCoordinator(DataUpdateCoordinator):
         
         # Initialize managers
         self.floorplan_manager = FloorplanManager(hass, floorplan_id)
-        self.zone_manager = TriggerZoneManager(hass)
+        self.zone_manager = TriggerZoneManager()
         self.motion_detector = MotionDetector(hass, sensors={})  # Sensors added later
         self.hybrid_detector = HybridMotionDetector(hass)
         self.pattern_analyzer = PatternAnalyzer()
