@@ -3,12 +3,16 @@ from dataclasses import dataclass, field, asdict
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
+# Event schema version - increment when breaking changes occur
+EVENT_SCHEMA_VERSION = "1.0.0"
+
 
 @dataclass
 class MotionDetectedEventData:
     """Data for motiondirection_motion_detected event.
     
     Attributes:
+        schema_version: Event schema version for compatibility
         direction: Detected direction name
         confidence: Detection confidence (0-1)
         detection_method: Method used (multi_sensor, hybrid, cue_assisted, etc.)
@@ -25,6 +29,7 @@ class MotionDetectedEventData:
     confidence: float
     detection_method: str
     timestamp: str  # ISO format
+    schema_version: str = EVENT_SCHEMA_VERSION
     vector: Optional[List[float]] = None
     speed: Optional[float] = None
     path: Optional[List[List[float]]] = None
@@ -42,6 +47,7 @@ class PatternDetectedEventData:
     """Data for motiondirection_pattern_detected event.
     
     Attributes:
+        schema_version: Event schema version for compatibility
         pattern_type: Type of pattern (linear, circular, etc.)
         confidence: Pattern confidence (0-1)
         duration_ms: Pattern duration in milliseconds
@@ -54,6 +60,7 @@ class PatternDetectedEventData:
     confidence: float
     duration_ms: float
     timestamp: str  # ISO format
+    schema_version: str = EVENT_SCHEMA_VERSION
     sensor_sequence: List[str] = field(default_factory=list)
     zone_sequence: List[str] = field(default_factory=list)
     
@@ -67,6 +74,7 @@ class ZoneEnteredEventData:
     """Data for motiondirection_zone_entered event.
     
     Attributes:
+        schema_version: Event schema version for compatibility
         zone_id: Zone identifier
         zone_name: Zone display name
         entry_point: Entry position (x, y)
@@ -79,6 +87,7 @@ class ZoneEnteredEventData:
     zone_id: str
     zone_name: str
     entry_time: str  # ISO format
+    schema_version: str = EVENT_SCHEMA_VERSION
     entry_point: Optional[List[float]] = None
     direction: Optional[str] = None
     confidence: float = 0.0
@@ -94,6 +103,7 @@ class ZoneExitedEventData:
     """Data for motiondirection_zone_exited event.
     
     Attributes:
+        schema_version: Event schema version for compatibility
         zone_id: Zone identifier
         zone_name: Zone display name
         exit_point: Exit position (x, y)
@@ -107,6 +117,7 @@ class ZoneExitedEventData:
     zone_id: str
     zone_name: str
     exit_time: str  # ISO format
+    schema_version: str = EVENT_SCHEMA_VERSION
     exit_point: Optional[List[float]] = None
     direction: Optional[str] = None
     dwell_time_ms: float = 0.0
@@ -123,6 +134,7 @@ class ZoneDirectionDetectedEventData:
     """Data for motiondirection_zone_direction_detected event.
     
     Attributes:
+        schema_version: Event schema version for compatibility
         zone_id: Zone identifier
         zone_name: Zone display name
         direction: Detected direction name
@@ -138,6 +150,7 @@ class ZoneDirectionDetectedEventData:
     direction: str
     confidence: float
     timestamp: str  # ISO format
+    schema_version: str = EVENT_SCHEMA_VERSION
     entry_point: Optional[List[float]] = None
     exit_point: Optional[List[float]] = None
     transit_time_ms: float = 0.0
@@ -152,6 +165,7 @@ class ZonePatternDetectedEventData:
     """Data for motiondirection_zone_pattern_detected event.
     
     Attributes:
+        schema_version: Event schema version for compatibility
         zone_id: Zone identifier
         zone_name: Zone display name
         pattern_type: Type of pattern detected
@@ -165,6 +179,7 @@ class ZonePatternDetectedEventData:
     pattern_type: str
     pattern_confidence: float
     timestamp: str  # ISO format
+    schema_version: str = EVENT_SCHEMA_VERSION
     occurrences: int = 1
     
     def to_dict(self) -> Dict[str, Any]:
@@ -177,6 +192,7 @@ class CueTriggeredEventData:
     """Data for motiondirection_cue_triggered event.
     
     Attributes:
+        schema_version: Event schema version for compatibility
         cue_id: Cue identifier
         cue_entity_id: Cue Home Assistant entity ID
         cue_type: Type of cue (door, light, etc.)
@@ -192,6 +208,7 @@ class CueTriggeredEventData:
     cue_type: str
     state_change: str
     timestamp: str  # ISO format
+    schema_version: str = EVENT_SCHEMA_VERSION
     position: Optional[List[float]] = None
     correlated_motion: bool = False
     motion_sensor: Optional[str] = None
@@ -206,6 +223,7 @@ class HybridDetectionEventData:
     """Data for motiondirection_hybrid_detection event.
     
     Attributes:
+        schema_version: Event schema version for compatibility
         direction: Detected direction
         motion_confidence: Confidence from motion sensors
         cue_confidence: Confidence from cues
@@ -221,6 +239,7 @@ class HybridDetectionEventData:
     cue_confidence: float
     combined_confidence: float
     timestamp: str  # ISO format
+    schema_version: str = EVENT_SCHEMA_VERSION
     motion_sensor: Optional[str] = None
     contributing_cues: List[str] = field(default_factory=list)
     cue_details: List[Dict[str, Any]] = field(default_factory=list)
@@ -235,6 +254,7 @@ class CueCorrelationDetectedEventData:
     """Data for motiondirection_cue_correlation_detected event.
     
     Attributes:
+        schema_version: Event schema version for compatibility
         cue_id: Cue identifier
         motion_sensor: Motion sensor entity ID
         correlation_strength: Strength of correlation (0-1)
@@ -249,6 +269,7 @@ class CueCorrelationDetectedEventData:
     correlation_strength: float
     time_offset_ms: float
     timestamp: str  # ISO format
+    schema_version: str = EVENT_SCHEMA_VERSION
     spatial_distance: float = 0.0
     confidence: float = 0.0
     
@@ -262,6 +283,7 @@ class CuePatternLearnedEventData:
     """Data for motiondirection_cue_pattern_learned event.
     
     Attributes:
+        schema_version: Event schema version for compatibility
         cue_id: Cue identifier
         pattern_type: Type of pattern learned
         pattern_description: Human-readable description
@@ -276,6 +298,7 @@ class CuePatternLearnedEventData:
     pattern_description: str
     confidence: float
     timestamp: str  # ISO format
+    schema_version: str = EVENT_SCHEMA_VERSION
     occurrences: int = 1
     suggested_hint: Optional[Dict[str, Any]] = None
     
@@ -289,6 +312,7 @@ class AnomalyDetectedEventData:
     """Data for motiondirection_anomaly_detected event.
     
     Attributes:
+        schema_version: Event schema version for compatibility
         anomaly_type: Type of anomaly (unexpected_path, unusual_timing, wrong_direction)
         description: Human-readable description
         severity: Severity level (low, medium, high)
@@ -304,6 +328,7 @@ class AnomalyDetectedEventData:
     severity: str
     confidence: float
     timestamp: str  # ISO format
+    schema_version: str = EVENT_SCHEMA_VERSION
     expected_pattern: Optional[str] = None
     actual_pattern: Optional[str] = None
     affected_sensors: List[str] = field(default_factory=list)

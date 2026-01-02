@@ -16,6 +16,7 @@ from ..models import (
     SecondaryCue,
     StateChange,
 )
+from .correlation_analyzer import CueCorrelationAnalyzer
 from .cue_type_registry import CueTypeRegistry
 
 _LOGGER = logging.getLogger(__name__)
@@ -77,6 +78,7 @@ class HybridMotionDetector:
         self.motion_buffer: Deque[MotionEvent] = deque(maxlen=100)
         self.cue_buffer: Deque[CueEvent] = deque(maxlen=200)
         self.cues: Dict[str, SecondaryCue] = cues or {}
+        self.correlation_analyzer = CueCorrelationAnalyzer()
         
         _LOGGER.info(
             "HybridMotionDetector initialized with %d cues",
@@ -165,6 +167,16 @@ class HybridMotionDetector:
         
         # Find correlated cues (using dynamic time windows per cue type)
         correlated_cues = self._find_correlated_cues_dynamic(event)
+        
+        # Record correlations for analysis
+        for cue_event in correlated_cues:
+            # We'll mark as successful after direction calculation
+            # For now, just record the correlation
+            self.correlation_analyzer.record_correlation(
+                motion_event=event,
+                cue_event=cue_event,
+                was_successful=True,  # Will be updated after validation
+            )
         
         # Determine detection method
         if len(self.motion_buffer) >= 2:

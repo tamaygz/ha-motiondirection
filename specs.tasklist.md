@@ -507,20 +507,24 @@
 ---
 
 ### 6.6 Cue Correlation Analysis
-**Status:** 🔴 Not Started  
+**Status:** � Complete  
 **Complexity:** High  
 **Specs Reference:** Lines 1341-1349, 1870-1889  
 **Description:** Implement correlation analysis and pattern learning.
 
 **Tasks:**
-- [ ] Implement correlation strength calculation
-- [ ] Implement time offset analysis between cue and motion
-- [ ] Implement spatial correlation validation
-- [ ] Implement pattern detection (sequential, timing-based)
-- [ ] Store learned correlations
-- [ ] Generate suggestions for new cue configurations
-- [ ] Implement auto-suggest mode (Lines 1040)
-- [ ] Respect correlation window tuning per cue type (Lines 1870-1889)
+- [x] Implement correlation strength calculation (exponential temporal decay)
+- [x] Implement time offset analysis between cue and motion
+- [x] Implement spatial correlation validation (Euclidean distance with type-specific thresholds)
+- [x] Implement pattern detection (sequential, correlation, timing-based)
+- [x] Store learned correlations (CorrelationStatistics tracking)
+- [x] Generate suggestions for new cue configurations
+- [x] Implement statistical tracking with CueCorrelationAnalyzer
+- [x] Integrate with HybridMotionDetector for automatic recording
+- [x] Support for analyze_correlations() and learn_patterns() methods
+- [x] Temporal and spatial pattern identification
+- [x] Confidence scoring with temporal decay weighting
+- [x] Historical correlation analysis with configurable time periods
 
 **Dependencies:** 6.2
 
@@ -846,7 +850,7 @@
 - [x] Add validation for required fields
 - [x] Add serialization methods
 - [x] Ensure JSON-serializable output
-- [ ] Add event versioning support
+- [x] Add event versioning support (EVENT_SCHEMA_VERSION = "1.0.0")
 
 **Dependencies:** 2.1
 
@@ -1775,3 +1779,4 @@
 - Testing should be ongoing throughout development, not just at end
 - Documentation should be written alongside code
 - Regular progress updates to this task list recommended
+

@@ -1,4 +1,5 @@
 """Core detection and processing modules."""
+from .correlation_analyzer import CueCorrelationAnalyzer, CorrelationStatistics, CorrelationPattern
 from .cue_type_registry import CueTypeRegistry
 from .event_bus import EventBus
 from .event_collector import EventCollector
@@ -11,6 +12,9 @@ from .vector_calculator import VectorCalculator
 from .zone_manager import TriggerZoneManager
 
 __all__ = [
+    "CorrelationPattern",
+    "CorrelationStatistics",
+    "CueCorrelationAnalyzer",
     "CueTypeRegistry",
     "EventBus",
     "EventCollector",
