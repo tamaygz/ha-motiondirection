@@ -14,11 +14,13 @@ import math
 from collections import defaultdict
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional, Tuple, TYPE_CHECKING
 
-from ..models.events import CueEvent, MotionEvent
+from ..models.motion_event import MotionEvent
 from ..models.sensor_node import SensorNode
-from ..models.secondary_cue import SecondaryCue
+
+if TYPE_CHECKING:
+    from .hybrid_detector import CueEvent
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -129,7 +131,7 @@ class CueCorrelationAnalyzer:
     def record_correlation(
         self,
         motion_event: MotionEvent,
-        cue_event: CueEvent,
+        cue_event: "CueEvent",
         was_successful: bool = True,
     ) -> None:
         """Record a correlation observation.
