@@ -8,5 +8,8 @@
   "codeowners": ["@tamaygz"],
   "requirements": [],
   "iot_class": "Local Polling",
-  "homeassistant": "2024.1.0"
+  "homeassistant": "2024.1.0",
+  "filename": "ha-motiondirection.zip",
+  "zip_release": true,
+  "content_in_root": false
 }

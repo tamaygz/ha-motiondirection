@@ -1131,18 +1131,40 @@
 ---
 
 ### 12.9 Card Registration
-**Status:** 🔴 Not Started  
+**Status:** ✅ Complete  
 **Complexity:** Low  
 **Specs Reference:** Lines 2141-2149  
 **Description:** Register all custom cards with Home Assistant.
 
 **Tasks:**
-- [ ] Create card registration code
-- [ ] Add to resources in configuration.yaml
-- [ ] Create card info definitions
-- [ ] Add card previews/screenshots
-- [ ] Document card configurations
-- [ ] Add to HACS resources
+- [x] Create card registration code
+- [x] Add to resources in configuration.yaml
+- [x] Create card info definitions
+- [x] Add card previews/screenshots
+- [x] Document card configurations
+- [x] Add to HACS resources
+
+**Implementation Notes:**
+- Created `frontend/card-loader.js` with automatic card registration
+- Updated `manifest.json` with frontend resources configuration
+- Updated `hacs.json` with proper metadata for HACS integration
+- Created comprehensive `docs/CARD_REGISTRATION.md` documentation
+- Card loader automatically registers all 9 custom cards with Home Assistant
+- Includes card definitions, module paths, and configuration examples
+- Provides manual registration instructions as fallback
+- Documents all card types, configurations, and usage examples
+- Includes troubleshooting guide and development tips
+
+**All Custom Cards:**
+1. Motion Status Card - `custom:motiondirection-motion-status`
+2. Floorplan Editor Card - `custom:motiondirection-floorplan-editor`
+3. Motion Visualizer Card - `custom:motiondirection-motion-visualizer`
+4. Zone Editor Card - `custom:motiondirection-zone-editor`
+5. Zone Status Card - `custom:motiondirection-zone-status`
+6. Zone Flow Visualizer - `custom:motiondirection-zone-flow-visualizer`
+7. Cue Editor Card - `custom:motiondirection-cue-editor`
+8. Cue Status Card - `custom:motiondirection-cue-status`
+9. Hybrid Detection Visualizer - `custom:motiondirection-hybrid-visualizer`
 
 **Dependencies:** 12.1-12.8
 
