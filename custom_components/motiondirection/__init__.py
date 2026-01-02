@@ -220,6 +220,22 @@ async def async_register_services(hass: HomeAssistant) -> None:
         vol.Optional("test_duration", default=30): vol.All(vol.Coerce(int), vol.Range(min=10, max=300)),
     })
     
+    # Diagnostic service schemas
+    SERVICE_GET_STATUS_SCHEMA = vol.Schema({
+        vol.Optional("floorplan_id"): cv.string,
+        vol.Optional("verbose", default=False): cv.boolean,
+    })
+    
+    SERVICE_TEST_DETECTION_SCHEMA = vol.Schema({
+        vol.Required("floorplan_id"): cv.string,
+        vol.Optional("test_duration", default=60): vol.All(vol.Coerce(int), vol.Range(min=10, max=300)),
+        vol.Optional("verbose", default=False): cv.boolean,
+    })
+    
+    SERVICE_VALIDATE_CONFIG_SCHEMA = vol.Schema({
+        vol.Optional("floorplan_id"): cv.string,
+    })
+    
     # Analysis service schemas
     SERVICE_ANALYZE_PATTERN_SCHEMA = vol.Schema({
         vol.Required("start_time"): cv.string,

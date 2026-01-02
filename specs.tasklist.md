@@ -465,38 +465,38 @@
 ---
 
 ### 6.4 Cue Sensors
-**Status:** 🔴 Not Started  
+**Status:** � Complete  
 **Complexity:** Medium  
 **Specs Reference:** Lines 1174-1208  
 **Description:** Create secondary cue status and correlation sensors.
 
 **Tasks:**
-- [ ] Create `sensor.secondary_cue_{id}` status entity (Lines 1176-1189)
-- [ ] Create `sensor.cue_correlation_analysis` entity (Lines 1193-1208)
-- [ ] Track cue trigger events and timing
-- [ ] Calculate correlation statistics (success rate, count)
-- [ ] Track active correlations with motion sensors
-- [ ] Update sensors on cue state changes
-- [ ] Implement top correlations tracking
+- [x] Create `sensor.secondary_cue_{id}` status entity (Lines 1176-1189)
+- [x] Create `sensor.cue_correlation_analysis` entity (Lines 1193-1208)
+- [x] Track cue trigger events and timing
+- [x] Calculate correlation statistics (success rate, count)
+- [x] Track active correlations with motion sensors
+- [x] Update sensors on cue state changes
+- [x] Implement top correlations tracking
 
 **Dependencies:** 6.2
 
 ---
 
 ### 6.5 Cue Events
-**Status:** 🔴 Not Started  
+**Status:** 🟢 Complete  
 **Complexity:** Low  
 **Specs Reference:** Lines 1504-1567  
 **Description:** Implement secondary cue event firing.
 
 **Tasks:**
-- [ ] Implement `motiondirection_cue_triggered` event (Lines 1506-1517)
-- [ ] Implement `motiondirection_hybrid_detection` event (Lines 1519-1532)
-- [ ] Implement `motiondirection_cue_correlation_detected` event (Lines 1534-1544)
-- [ ] Implement `motiondirection_cue_pattern_learned` event (Lines 1546-1559)
-- [ ] Fire events at appropriate detection stages
-- [ ] Include all required event data
-- [ ] Add event logging
+- [x] Implement `motiondirection_cue_triggered` event (Lines 1506-1517)
+- [x] Implement `motiondirection_hybrid_detection` event (Lines 1519-1532)
+- [x] Implement `motiondirection_cue_correlation_detected` event (Lines 1534-1544)
+- [x] Implement `motiondirection_cue_pattern_learned` event (Lines 1546-1559)
+- [x] Fire events at appropriate detection stages
+- [x] Include all required event data
+- [x] Add event logging
 
 **Dependencies:** 6.2
 
