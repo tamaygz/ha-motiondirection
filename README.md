@@ -63,15 +63,16 @@ HA-MotionDirection is a powerful Home Assistant custom integration that intellig
 
 ### Enable Dashboard Cards (One-Time)
 
-After installation, enable the custom dashboard cards:
+The integration automatically registers all frontend resources. To enable the cards:
 
-1. A notification will appear with instructions
-2. Go to **Settings → Dashboards → Resources**
-3. Click **Add Resource**
-4. Set URL to: `/hacsfiles/ha-motiondirection/card-loader.js`
-5. Set Resource Type to: **JavaScript Module**
-6. Click **Create**
-7. Hard refresh your browser (Ctrl+Shift+R or Cmd+Shift+R)
+1. **Register the resource:**
+   - Go to **Settings → Dashboards → Resources**
+   - Click **Add Resource**
+   - URL: `/hacsfiles/ha-motiondirection/card-loader.js`
+   - Type: **JavaScript Module**
+   - Click **Create**
+
+2. **Refresh browser** (Ctrl+Shift+R or Cmd+Shift+R)
 
 All 9 custom cards will now be available in the card picker!
 

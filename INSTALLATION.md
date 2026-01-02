@@ -4,16 +4,19 @@
 
 After installing the Motion Direction integration, follow these steps to enable the custom dashboard cards.
 
-## Automatic Setup
+## Automatic Setup ✨
 
 The integration automatically:
 - ✅ Registers frontend resources at `/hacsfiles/ha-motiondirection/`
-- ✅ Makes all card files accessible
+- ✅ Makes all 9 custom cards available
 - ✅ Creates a notification with setup instructions
+- ✅ Serves files with proper caching headers
+
+**No manual file copying required!**
 
 ### Enable the Cards (One-Time Setup)
 
-After installing the integration, you need to register the card loader **once**:
+After installing the integration, you only need to register the card loader **once**:
 
 1. **Go to Settings → Dashboards → Resources** (or click the link in the notification)
 
@@ -56,12 +59,13 @@ After registration, these cards are available:
 **Problem:** Cards don't appear in the card picker after adding resource
 
 **Solutions:**
-1. Hard refresh your browser (Ctrl+Shift+R or Cmd+Shift+R)
-2. Clear browser cache
-3. Check browser console for errors (F12 → Console)
-4. Verify the resource URL is correct: `/hacsfiles/ha-motiondirection/card-loader.js`
-5. Check resource type is set to "JavaScript Module"
-6. Restart Home Assistant
+1. Verify resource URL is correct: `/hacsfiles/ha-motiondirection/card-loader.js`
+2. Check resource type is set to "JavaScript Module"
+3. Hard refresh your browser (Ctrl+Shift+R or Cmd+Shift+R)
+4. Clear browser cache
+5. Check browser console for errors (F12 → Console)
+6. Check Home Assistant logs for frontend registration success message
+7. Restart Home Assistant
 
 ### "Custom element doesn't exist" Error
 
@@ -69,7 +73,7 @@ After registration, these cards are available:
 
 **Solutions:**
 1. Check that JavaScript files are loading (F12 → Network tab)
-2. Verify all files exist in `custom_components/motiondirection/frontend/`
+2. Verify all files exist in `/config/www/motion-direction/`
 3. Check for JavaScript errors in console
 4. Ensure card-loader.js loaded successfully
 
@@ -78,10 +82,11 @@ After registration, these cards are available:
 **Problem:** Files return 404 errors
 
 **Solutions:**
-1. Verify integration is installed in `custom_components/motiondirection/`
+1. Verify integration is properly installed in `custom_components/motiondirection/`
 2. Check frontend directory exists: `custom_components/motiondirection/frontend/`
 3. Restart Home Assistant
-4. Check Home Assistant logs for frontend registration messages
+4. Check Home Assistant logs for "Successfully registered frontend resources" message
+5. Try accessing files directly: `http://your-ha-ip:8123/hacsfiles/ha-motiondirection/card-loader.js`
 
 ### CORS Errors
 
@@ -119,23 +124,38 @@ lovelace:
       type: module
 ```
 
-### Method 3: Manual www/ Directory
+### Method 3: Manual www/ Copy (Fallback)
 
-For development or testing:
+If automatic registration fails for any reason:
 
-1. Copy frontend files to `/config/www/motion-direction/`
-2. Add resources with URL: `/local/motion-direction/card-loader.js`
+```bash
+# Copy frontend files to www directory
+mkdir -p /config/www/motion-direction/
+cp /config/custom_components/motiondirection/frontend/*.js /config/www/motion-direction/
+```
+
+Then use `/local/motion-direction/card-loader.js` as the resource URL.
 
 ## Verification
 
 Check that everything is working:
 
 ```bash
-# Check files exist
-ls -la custom_components/motiondirection/frontend/
+# Check source files exist
+ls -la /config/custom_components/motiondirection/frontend/
 
-# Check Home Assistant logs
-# Look for: "Registered frontend resources at /hacsfiles/ha-motiondirection/"
+# Should see: card-loader.js and all *-card.js files
+```
+
+**Test direct access:**
+- Open browser to: `http://your-ha-ip:8123/hacsfiles/ha-motiondirection/card-loader.js`
+- Should download or display the JavaScript file
+- If 404 error, check Home Assistant logs for registration errors
+
+**Check Home Assistant logs:**
+```bash
+# Look for successful registration message
+grep "Successfully registered frontend resources" /config/home-assistant.log
 ```
 
 ## HACS Installation

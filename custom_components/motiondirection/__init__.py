@@ -7,11 +7,12 @@ visual floorplan configuration, trigger zones, and secondary cues.
 """
 import asyncio
 import logging
-import os
+from pathlib import Path
 from typing import Any
 
 import voluptuous as vol
 
+from homeassistant.components.http import StaticPathConfig
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant, ServiceCall, ServiceResponse, SupportsResponse, callback
@@ -57,69 +58,45 @@ async def _async_register_frontend_resources(hass: HomeAssistant) -> None:
     Args:
         hass: Home Assistant instance
     """
-    # Get the integration directory path
-    integration_dir = os.path.dirname(__file__)
-    frontend_dir = os.path.join(integration_dir, "frontend")
+    # Get the integration directory path using Path
+    integration_path = Path(__file__).parent
+    frontend_path = integration_path / "frontend"
     
     # Verify frontend directory exists
-    if not os.path.isdir(frontend_dir):
-        _LOGGER.error("Frontend directory not found at %s", frontend_dir)
+    if not frontend_path.is_dir():
+        _LOGGER.error("Frontend directory not found at %s", frontend_path)
         return
     
-    # Register static paths for frontend resources
+    # Register static paths for frontend resources using StaticPathConfig
     # This makes files accessible at /hacsfiles/ha-motiondirection/
-    await hass.http.async_register_static_paths(
-        [
-            {
-                "path": "/hacsfiles/ha-motiondirection",
-                "directory": frontend_dir,
-                "cache_headers": True,
-            },
-            {
-                "path": f"/local/community/{DOMAIN}",
-                "directory": frontend_dir,
-                "cache_headers": True,
-            },
-        ]
-    )
-    
-    _LOGGER.info("Registered frontend resources at /hacsfiles/ha-motiondirection/")
-    _LOGGER.info("Registered frontend resources at /local/community/%s/", DOMAIN)
-    
-    # Try to register the card loader with the frontend
-    # The card-loader.js will auto-register all cards when loaded
     try:
-        # Import the lovelace config to check if we can register resources
-        from homeassistant.components.lovelace import dashboard
+        await hass.http.async_register_static_paths([
+            StaticPathConfig(
+                "/hacsfiles/ha-motiondirection",
+                str(frontend_path),
+                True,  # cache_headers - set to True for production
+            ),
+        ])
         
-        # Check if lovelace is loaded
-        if "lovelace" in hass.data:
-            _LOGGER.info(
-                "Lovelace integration detected. Cards will be auto-registered via card-loader.js"
-            )
-            # The card-loader.js will be loaded automatically when users access the frontend
-            # and will register all cards in window.customCards
-        else:
-            _LOGGER.info(
-                "Lovelace integration not yet loaded. "
-                "Cards will be available after Lovelace initializes."
-            )
-    except ImportError:
-        _LOGGER.debug("Lovelace import not available, using static path only")
-    except Exception as err:
-        _LOGGER.debug(
-            "Could not check lovelace status: %s. Frontend resources are still available.",
-            err,
+        _LOGGER.info(
+            "Successfully registered frontend resources at /hacsfiles/ha-motiondirection/"
         )
-    
-    # Log instructions for users
-    _LOGGER.info(
-        "Motion Direction cards are available. "
-        "To use them, add the card-loader.js as a Lovelace resource:\n"
-        "URL: /hacsfiles/ha-motiondirection/card-loader.js\n"
-        "Type: JavaScript Module\n"
-        "Or access individual cards at /hacsfiles/ha-motiondirection/<card-name>.js"
-    )
+        
+        # Count available card files
+        card_files = list(frontend_path.glob("*-card.js"))
+        _LOGGER.info(
+            "Found %d card implementations: %s",
+            len(card_files),
+            ", ".join(f.stem for f in card_files),
+        )
+        
+    except Exception as err:
+        _LOGGER.error(
+            "Failed to register frontend resources: %s. "
+            "Cards will need to be manually copied to www directory.",
+            err,
+            exc_info=True,
+        )
 
 
 
@@ -181,23 +158,26 @@ async def _async_notify_frontend_setup(hass: HomeAssistant, entry: ConfigEntry) 
             "title": "Motion Direction - Frontend Cards Available",
             "message": (
                 "**Motion Direction custom cards are now available!**\n\n"
-                "To use the dashboard cards, add this resource to Lovelace:\n\n"
+                "The integration has automatically registered all frontend resources. "
+                "To use the dashboard cards, add the card loader to Lovelace:\n\n"
+                "**Quick Setup:**\n\n"
                 "1. Go to **Settings → Dashboards → Resources**\n"
                 "2. Click **Add Resource**\n"
                 "3. Set URL to: `/hacsfiles/ha-motiondirection/card-loader.js`\n"
                 "4. Set Resource Type to: **JavaScript Module**\n"
-                "5. Click **Create**\n\n"
-                "This will register all 9 custom cards:\n"
-                "- Motion Status Card\n"
-                "- Floorplan Editor Card\n"
-                "- Motion Visualizer Card\n"
-                "- Zone Status & Editor Cards\n"
-                "- Zone Flow Visualizer Card\n"
-                "- Cue Status & Editor Cards\n"
-                "- Hybrid Visualizer Card\n\n"
-                "After adding the resource, hard refresh your browser (Ctrl+Shift+R) "
-                "and the cards will appear in the card picker.\n\n"
-                "[View Documentation](https://github.com/tamaygz/ha-motiondirection)"
+                "5. Click **Create**\n"
+                "6. Hard refresh browser (Ctrl+Shift+R or Cmd+Shift+R)\n\n"
+                "**Available Cards (9 total):**\n"
+                "- Motion Status Card - Current direction and confidence\n"
+                "- Floorplan Editor Card - Interactive sensor placement\n"
+                "- Motion Visualizer Card - Trails, heatmaps, and playback\n"
+                "- Zone Status & Editor Cards - Zone management\n"
+                "- Zone Flow Visualizer Card - Inter-zone movement\n"
+                "- Cue Status & Editor Cards - Secondary cue configuration\n"
+                "- Hybrid Visualizer Card - Combined detection view\n\n"
+                "After adding the resource and refreshing, all cards will appear "
+                "in the card picker when you click 'Add Card'.\n\n"
+                "[View Documentation](https://github.com/tamaygz/ha-motiondirection/blob/master/INSTALLATION.md)"
             ),
             "notification_id": f"{DOMAIN}_frontend_setup",
         },
