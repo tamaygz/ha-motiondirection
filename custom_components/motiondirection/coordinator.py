@@ -538,8 +538,8 @@ class MotionDirectionCoordinator(DataUpdateCoordinator):
             return "unusual_timing"
         
         # Check if direction is reversed
-        current_sensors = [e.sensor.id for e in current.events]
-        expected_sensors = [e.sensor.id for e in expected.events]
+        current_sensors = [e.sensor.entity_id for e in current.events]
+        expected_sensors = [e.sensor.entity_id for e in expected.events]
         
         if current_sensors == expected_sensors[::-1]:
             return "wrong_direction"

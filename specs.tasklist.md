@@ -1037,22 +1037,31 @@
 ---
 
 ### 12.6 Cue Editor Card
-**Status:** 🔴 Not Started  
+**Status:** � Complete  
 **Complexity:** Medium  
 **Specs Reference:** Lines 1660-1673  
 **Description:** Create secondary cue configuration card.
 
 **Tasks:**
-- [ ] Create `frontend/cue-editor.js` custom element
-- [ ] Display available entities for cues
-- [ ] Implement cue placement on floorplan
-- [ ] Show cue type selection
-- [ ] Configure directional hints UI
-- [ ] Show correlation lines to nearby sensors
-- [ ] Visualize cue states (icons/badges/circles)
-- [ ] Implement animations (pulse/glow)
-- [ ] Show confidence indicators
-- [ ] Integrate with cue services
+- [x] Create `frontend/cue-editor-card.js` custom element
+- [x] Display available entities for cues with entity selector
+- [x] Implement cue placement on floorplan with drag-and-drop
+- [x] Show cue type selection (door, window, light, switch, lock, climate, media, appliance)
+- [x] Configure directional hints UI with add/remove functionality
+- [x] Show correlation lines to nearby sensors
+- [x] Visualize cue states with multiple styles (icons/badges/circles)
+- [x] Implement animations (pulse/glow/none)
+- [x] Show confidence indicators
+- [x] Integrate with cue services (update_cue, delete_cue)
+- [x] Support view/edit/create modes
+- [x] Entity filtering and domain categorization
+- [x] Real-time state updates
+- [x] Details panel for cue configuration
+
+**Files Created:**
+- `custom_components/motiondirection/frontend/cue-editor-card.js` - 900+ lines, full-featured cue editor with entity selection, drag-and-drop placement, directional hints configuration, correlation visualization, and service integration
+
+**Note:** Similar architecture to Zone Editor Card but focused on secondary cues. Supports multiple visualization styles and animations. Entity selector filters available entities by domain.
 
 **Dependencies:** 12.1, 6.3
 
