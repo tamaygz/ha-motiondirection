@@ -9,6 +9,7 @@ from typing import Any, Dict
 import yaml
 
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.storage import Store
 
 from ..const import DOMAIN, STORAGE_VERSION
@@ -464,7 +465,7 @@ class FloorplanManager:
         discovered = []
         
         # Get entity registry
-        entity_registry = self.hass.helpers.entity_registry.async_get(self.hass)
+        entity_registry = er.async_get(self.hass)
         
         for entity in entity_registry.entities.values():
             # Filter for motion/occupancy sensors

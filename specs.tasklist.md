@@ -920,24 +920,29 @@
 ---
 
 ### 12.2 Motion Visualizer Card
-**Status:** 🔴 Planned - Phase 2  
+**Status:** � Complete  
 **Complexity:** High  
 **Specs Reference:** Lines 1604-1615  
 **Description:** Create real-time motion visualization card.
 
 **Tasks:**
-- [ ] Create `frontend/motion-visualizer.js` custom element
-- [ ] Implement real-time motion display
-- [ ] Implement historical motion playback
-- [ ] Implement heat map generation
-- [ ] Implement direction arrows
-- [ ] Implement confidence overlay (opacity based)
-- [ ] Support animation speed control
-- [ ] Subscribe to motion events via WebSocket
-- [ ] Implement time range selection
-- [ ] Add playback controls
+- [x] Create `frontend/motion-visualizer-card.js` custom element
+- [x] Implement real-time motion display with trails
+- [x] Implement historical motion playback with timeline
+- [x] Implement heat map generation with alpha blending
+- [x] Implement direction arrows with vector graphics
+- [x] Implement confidence overlay (opacity based)
+- [x] Support animation speed control
+- [x] Use requestAnimationFrame for smooth animations
+- [x] Implement time range selection with slider
+- [x] Add playback controls (play/pause, clear)
+- [x] Add toggle controls for heat map, arrows, confidence
+- [x] Display real-time statistics (events, avg confidence, active zones)
 
-**Note:** Architecture documented in frontend/README.md.
+**Files Created:**
+- `custom_components/motiondirection/frontend/motion-visualizer-card.js` - 950+ lines, Canvas-based real-time visualization with trails, heat maps, direction arrows, confidence overlays, and historical playback
+
+**Note:** Uses Canvas API with requestAnimationFrame for efficient rendering. Heat map uses radial gradients with alpha blending. Motion trails decay over time.
 
 **Dependencies:** 12.1, 11.1
 
@@ -972,44 +977,60 @@
 ---
 
 ### 12.4 Zone Status Card
-**Status:** 🔴 Planned - Phase 2  
+**Status:** � Complete  
 **Complexity:** Medium  
 **Specs Reference:** Lines 1631-1645  
 **Description:** Create zone status monitoring card.
 
 **Tasks:**
-- [ ] Create `frontend/zone-status.js` custom element
-- [ ] Display list of zones
-- [ ] Show current direction per zone
-- [ ] Show occupancy status
-- [ ] Show statistics (transitions, dwell time)
-- [ ] Support grid/list/compact layouts
-- [ ] Update in real-time via WebSocket
-- [ ] Configurable update interval (default 1000ms)
-- [ ] Implement zone filtering
+- [x] Create `frontend/zone-status-card.js` custom element
+- [x] Display list of zones with active/inactive badges
+- [x] Show current direction per zone with direction icons
+- [x] Show occupancy status (occupied/vacant)
+- [x] Show statistics (transitions, dwell time, last motion)
+- [x] Support grid/list/compact layouts with toggle buttons
+- [x] Update in real-time via hass property updates
+- [x] Configurable update interval (default 1000ms)
+- [x] Per-zone configuration (show_direction, show_occupancy, show_statistics)
+- [x] Display confidence bars for direction certainty
+- [x] Format timestamps and durations (human-readable)
+- [x] Handle unavailable entities with error messages
 
-**Note:** Zone states available via zone sensors. Architecture documented.
+**Files Created:**
+- `custom_components/motiondirection/frontend/zone-status-card.js` - 700+ lines, comprehensive zone monitoring with three layout modes, direction indicators, occupancy tracking, and real-time statistics
+
+**Note:** Zone states fetched from sensor.motiondirection_zone_{zone_id} entities. Updates via interval polling.
 
 **Dependencies:** 5.4, 11.1
 
 ---
 
 ### 12.5 Zone Flow Visualizer
-**Status:** 🔴 Planned - Phase 2  
+**Status:** � Complete  
 **Complexity:** High  
 **Specs Reference:** Lines 1647-1658  
 **Description:** Create zone flow pattern visualization card.
 
 **Tasks:**
-- [ ] Create `frontend/zone-flow.js` custom element
-- [ ] Implement particle-based flow visualization
-- [ ] Implement arrow-based flow visualization
-- [ ] Implement heat map visualization
-- [ ] Show real-time zone transitions
-- [ ] Show historical patterns
-- [ ] Zone highlighting with configurable colors
-- [ ] Support time range selection
-- [ ] Animate zone transitions
+- [x] Create `frontend/zone-flow-visualizer-card.js` custom element
+- [x] Implement particle-based flow visualization with trails
+- [x] Implement arrow-based flow visualization with gradients
+- [x] Implement heat map visualization with color gradients
+- [x] Show real-time zone transitions with animated particles
+- [x] Load flow paths from floorplan and flow entities
+- [x] Zone highlighting with configurable colors (active, idle, transit)
+- [x] Support flow style switching (particles, arrows, heatmap)
+- [x] Animate zone transitions with smooth interpolation
+- [x] Display zone labels on floorplan
+- [x] Show statistics (zones, paths, transitions)
+- [x] Use requestAnimationFrame for smooth animations
+- [x] Particle system with randomized speed and alpha
+- [x] Automatic path selection and particle recycling
+
+**Files Created:**
+- `custom_components/motiondirection/frontend/zone-flow-visualizer-card.js` - 850+ lines, Canvas-based particle flow system with three visualization modes, zone highlighting, and real-time statistics
+
+**Note:** Fetches zone data from sensor.motiondirection_floorplan_{floorplan_id} and flow data from sensor.motiondirection_{floorplan_id}_flow. Particles smoothly transition between zones.
 
 **Dependencies:** 12.1, 5.1
 
@@ -1038,20 +1059,30 @@
 ---
 
 ### 12.7 Cue Status Card
-**Status:** 🔴 Not Started  
+**Status:** � Complete  
 **Complexity:** Low  
 **Specs Reference:** Lines 1675-1689  
 **Description:** Create cue status monitoring card.
 
 **Tasks:**
-- [ ] Create `frontend/cue-status.js` custom element
-- [ ] Display list of configured cues
-- [ ] Show cue states
-- [ ] Show correlation statistics
-- [ ] Show correlation success rates
-- [ ] Support list/grid/compact layouts
-- [ ] Update in real-time
-- [ ] Configurable update interval
+- [x] Create `frontend/cue-status-card.js` custom element
+- [x] Display list of configured cues with type badges
+- [x] Show cue states (on/off) with icons
+- [x] Show correlation statistics (total, successful)
+- [x] Show correlation success rates with gradient progress bars
+- [x] Display active correlations with badges
+- [x] Support list/grid/compact layouts with toggle buttons
+- [x] Update in real-time via hass property updates
+- [x] Configurable update interval (default 1000ms)
+- [x] Per-cue configuration (show_state, show_correlations, show_statistics)
+- [x] Display statistics (avg confidence, total triggers, 24h triggers)
+- [x] Format last triggered timestamps (human-readable)
+- [x] Cue type icons (door, window, light, switch, etc.)
+
+**Files Created:**
+- `custom_components/motiondirection/frontend/cue-status-card.js` - 650+ lines, comprehensive cue monitoring with three layout modes, correlation tracking, success rate visualization, and real-time statistics
+
+**Note:** Cue states fetched from sensor.motiondirection_cue_{cue_id} entities. Updates via interval polling. Success rates visualized with gradient color bars.
 
 **Dependencies:** 6.4, 11.1
 

@@ -9,7 +9,7 @@ import voluptuous as vol
 from homeassistant import config_entries
 from homeassistant.const import CONF_NAME
 from homeassistant.core import HomeAssistant, callback
-from homeassistant.helpers import selector
+from homeassistant.helpers import entity_registry as er, selector
 import homeassistant.helpers.config_validation as cv
 
 from .const import (
@@ -345,7 +345,7 @@ class MotionDirectionConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         motion_sensors = []
         
         # Get all binary_sensor entities with motion device class
-        entity_registry = hass.helpers.entity_registry.async_get(hass)
+        entity_registry = er.async_get(hass)
         
         for entity in entity_registry.entities.values():
             if (
