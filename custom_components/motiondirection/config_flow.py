@@ -372,7 +372,7 @@ class MotionDirectionOptionsFlow(config_entries.OptionsFlow):
 
     def __init__(self, config_entry: config_entries.ConfigEntry) -> None:
         """Initialize options flow."""
-        self.config_entry = config_entry
+        self._config_entry = config_entry
 
     async def async_step_init(
         self, user_input: dict[str, Any] | None = None
@@ -391,13 +391,13 @@ class MotionDirectionOptionsFlow(config_entries.OptionsFlow):
                 {
                     vol.Required(
                         CONF_TIME_WINDOW,
-                        default=self.config_entry.data.get(
+                        default=self._config_entry.data.get(
                             CONF_TIME_WINDOW, DEFAULT_TIME_WINDOW
                         ),
                     ): vol.All(vol.Coerce(int), vol.Range(min=500, max=30000)),
                     vol.Required(
                         CONF_CONFIDENCE_THRESHOLD,
-                        default=self.config_entry.data.get(
+                        default=self._config_entry.data.get(
                             CONF_CONFIDENCE_THRESHOLD, DEFAULT_CONFIDENCE_THRESHOLD
                         ),
                     ): vol.All(vol.Coerce(float), vol.Range(min=0.0, max=1.0)),
