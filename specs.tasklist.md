@@ -1427,29 +1427,51 @@
 ## 17. Documentation
 
 ### 17.1 User Documentation
-**Status:** 🔴 Not Started  
+**Status:** � Complete  
 **Complexity:** Medium  
 **Specs Reference:** Lines 2051-2170, 2585-2705  
 **Description:** Create comprehensive user documentation.
 
 **Tasks:**
-- [ ] Write README.md with overview and features
-- [ ] Document installation methods (HACS and manual)
-- [ ] Document setup wizard steps
-- [ ] Create configuration examples (Appendix B, Lines 2585-2632)
-- [ ] Document all services with examples
-- [ ] Document all events with examples
-- [ ] Document frontend cards with screenshots
-- [ ] Create troubleshooting guide (Lines 2172-2260)
-- [ ] Create FAQ (Appendix D, Lines 2666-2705)
-- [ ] Add best practices guide (Lines 1836-1927)
+- [x] Write README.md with overview and features
+- [x] Document installation methods (HACS and manual)
+- [x] Document setup wizard steps
+- [x] Create configuration examples (Appendix B, Lines 2585-2632)
+- [x] Document all services with examples
+- [x] Document all events with examples
+- [x] Document frontend cards with screenshots
+- [x] Create troubleshooting guide (Lines 2172-2260)
+- [x] Create FAQ (Appendix D, Lines 2666-2705)
+- [x] Add best practices guide (Lines 1836-1927)
+- [x] Create USER_GUIDE.md with step-by-step guidance
+- [x] Add automation examples
 
 **Dependencies:** All modules
 
 ---
 
-### 17.2 Developer Documentation
-**Status:** 🔴 Not Started  
+### 17.2 API Reference Documentation
+**Status:** 🟢 Complete  
+**Complexity:** Medium  
+**Specs Reference:** Lines 16.1-16.4, Services, Events, Sensors  
+**Description:** Create comprehensive API reference for services, events, and sensors.
+
+**Tasks:**
+- [x] Document all service schemas with examples
+- [x] Document all event data structures with examples
+- [x] Document all sensor entities with attributes
+- [x] Document data models and types
+- [x] Create API_REFERENCE.md
+- [x] Add service usage examples
+- [x] Add event listener examples
+- [x] Document sensor states and attributes
+
+**Dependencies:** All modules
+
+---
+
+### 17.3 Developer Documentation
+**Status:** 🟡 In Progress  
 **Complexity:** Medium  
 **Specs Reference:** Lines 2396-2459  
 **Description:** Create developer documentation and contribution guidelines.
@@ -1462,7 +1484,7 @@
 - [ ] Document commit message format (Lines 2428-2441)
 - [ ] Create code review checklist (Lines 2443-2449)
 - [ ] Document architecture and design patterns
-- [ ] Create API reference documentation
+- [ ] Create DEVELOPER_GUIDE.md
 - [ ] Document testing requirements
 
 **Dependencies:** 1.3, 15.1-15.4
