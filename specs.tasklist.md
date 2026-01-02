@@ -590,23 +590,23 @@
 ## 8. Configuration Management
 
 ### 8.1 Config Flow
-**Status:** 🔴 Not Started  
+**Status:** � Complete  
 **Complexity:** High  
 **Specs Reference:** Lines 2097-2139  
 **Description:** Implement Home Assistant configuration flow UI.
 
 **Tasks:**
-- [ ] Create `config_flow.py` with ConfigFlow class
-- [ ] Implement initial setup wizard (6 steps per Lines 2099-2139)
-- [ ] Step 1: Add integration entry point
-- [ ] Step 2: Floorplan creation (name, dimensions, background, scale)
-- [ ] Step 3: Sensor placement with auto-discovery
-- [ ] Step 4: Secondary cues addition (optional)
-- [ ] Step 5: Zone creation (optional)
-- [ ] Step 6: Calibration (optional but recommended)
-- [ ] Implement options flow for reconfiguration
-- [ ] Add validation for all inputs
-- [ ] Support background image upload
+- [x] Create `config_flow.py` with ConfigFlow class
+- [x] Implement initial setup wizard (6 steps per Lines 2099-2139)
+- [x] Step 1: Add integration entry point
+- [x] Step 2: Floorplan creation (name, dimensions, background, scale)
+- [x] Step 3: Sensor placement with auto-discovery
+- [x] Step 4: Secondary cues addition (optional)
+- [x] Step 5: Zone creation (optional)
+- [x] Step 6: Calibration (optional but recommended)
+- [x] Implement options flow for reconfiguration
+- [x] Add validation for all inputs
+- [x] Support background image upload
 
 **Dependencies:** 1.2, 2.2
 
@@ -635,22 +635,22 @@
 ---
 
 ### 8.3 Constants Definition
-**Status:** 🔴 Not Started  
+**Status:** � Complete  
 **Complexity:** Low  
 **Specs Reference:** Lines 104-113, 905-925  
 **Description:** Define all constants used throughout the integration.
 
 **Tasks:**
-- [ ] Create `const.py` with all constants
-- [ ] Define DOMAIN = "motiondirection"
-- [ ] Define default values: DEFAULT_WINDOW_SIZE = 5000, MIN_WINDOW_SIZE = 500, MAX_WINDOW_SIZE = 30000
-- [ ] Define confidence thresholds
-- [ ] Define entity name patterns
-- [ ] Define event types
-- [ ] Define service names
-- [ ] Define configuration keys
-- [ ] Define pattern types enum
-- [ ] Define cue types enum
+- [x] Create `const.py` with all constants
+- [x] Define DOMAIN = "motiondirection"
+- [x] Define default values: DEFAULT_WINDOW_SIZE = 5000, MIN_WINDOW_SIZE = 500, MAX_WINDOW_SIZE = 30000
+- [x] Define confidence thresholds
+- [x] Define entity name patterns
+- [x] Define event types
+- [x] Define service names
+- [x] Define configuration keys
+- [x] Define pattern types enum
+- [x] Define cue types enum
 
 **Dependencies:** None
 
