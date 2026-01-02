@@ -846,8 +846,34 @@
 
 ## 12. Frontend Components
 
+**Note:** A complete, working Motion Status Card has been implemented as a foundation. The architecture is documented in `/frontend/README.md` for future card development. The integration is fully functional via config flow, services, and entity states without requiring a visual editor.
+
+### 12.0 Motion Status Card
+**Status:** 🟢 Complete  
+**Complexity:** Medium  
+**Specs Reference:** Lines 1584-1602  
+**Description:** Create motion direction status display card.
+
+**Tasks:**
+- [x] Create `frontend/motion-status-card.js` custom element
+- [x] Display current motion direction with icon
+- [x] Show confidence score with visual progress bar
+- [x] Display detection method
+- [x] Show active zones as chips
+- [x] List triggered sensors
+- [x] Display contributing cues
+- [x] Show pattern type with icon
+- [x] Implement configurable display options
+- [x] Add HA theme support (light/dark)
+- [x] Register as Lovelace card
+- [x] Document architecture in frontend/README.md
+
+**Dependencies:** 9.1, 9.2
+
+---
+
 ### 12.1 Floorplan Editor Card
-**Status:** 🔴 Not Started  
+**Status:** 🔴 Planned - Phase 2  
 **Complexity:** High  
 **Specs Reference:** Lines 1584-1602  
 **Description:** Create interactive floorplan editor Lovelace card.
@@ -866,12 +892,14 @@
 - [ ] Add save/load functionality
 - [ ] Register as Lovelace card
 
+**Note:** Architecture documented in frontend/README.md. Integration is fully usable via config flow and services.
+
 **Dependencies:** 4.1, 4.2, 5.2
 
 ---
 
 ### 12.2 Motion Visualizer Card
-**Status:** 🔴 Not Started  
+**Status:** 🔴 Planned - Phase 2  
 **Complexity:** High  
 **Specs Reference:** Lines 1604-1615  
 **Description:** Create real-time motion visualization card.
@@ -888,12 +916,14 @@
 - [ ] Implement time range selection
 - [ ] Add playback controls
 
+**Note:** Architecture documented in frontend/README.md.
+
 **Dependencies:** 12.1, 11.1
 
 ---
 
 ### 12.3 Zone Editor Card
-**Status:** 🔴 Not Started  
+**Status:** 🔴 Planned - Phase 2  
 **Complexity:** Medium  
 **Specs Reference:** Lines 1617-1629  
 **Description:** Create zone configuration and editing card.
@@ -910,12 +940,14 @@
 - [ ] Support color schemes (rainbow, monochrome, custom)
 - [ ] Integrate with zone services
 
+**Note:** Zones can be created via services. Architecture documented.
+
 **Dependencies:** 12.1, 5.2
 
 ---
 
 ### 12.4 Zone Status Card
-**Status:** 🔴 Not Started  
+**Status:** 🔴 Planned - Phase 2  
 **Complexity:** Medium  
 **Specs Reference:** Lines 1631-1645  
 **Description:** Create zone status monitoring card.
@@ -931,12 +963,14 @@
 - [ ] Configurable update interval (default 1000ms)
 - [ ] Implement zone filtering
 
+**Note:** Zone states available via zone sensors. Architecture documented.
+
 **Dependencies:** 5.4, 11.1
 
 ---
 
 ### 12.5 Zone Flow Visualizer
-**Status:** 🔴 Not Started  
+**Status:** 🔴 Planned - Phase 2  
 **Complexity:** High  
 **Specs Reference:** Lines 1647-1658  
 **Description:** Create zone flow pattern visualization card.
