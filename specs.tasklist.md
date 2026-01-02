@@ -1098,21 +1098,33 @@
 ---
 
 ### 12.8 Hybrid Detection Visualizer
-**Status:** 🔴 Not Started  
+**Status:** ✅ Complete  
 **Complexity:** High  
 **Specs Reference:** Lines 1691-1704  
 **Description:** Create hybrid detection visualization showing motion+cues.
 
 **Tasks:**
-- [ ] Create `frontend/hybrid-visualizer.js` custom element
-- [ ] Display motion sensors
-- [ ] Display secondary cues
-- [ ] Show correlation lines between motion and cues
-- [ ] Color code by type (motion vs cue)
-- [ ] Show detection method indicator
-- [ ] Implement confidence-based opacity
-- [ ] Show timeline of events
-- [ ] Display correlation timing offsets
+- [x] Create `frontend/hybrid-visualizer-card.js` custom element
+- [x] Display motion sensors
+- [x] Display secondary cues
+- [x] Show correlation lines between motion and cues
+- [x] Color code by type (motion vs cue)
+- [x] Show detection method indicator
+- [x] Implement confidence-based opacity
+- [x] Show timeline of events
+- [x] Display correlation timing offsets
+
+**Implementation Notes:**
+- Created `frontend/hybrid-visualizer-card.js` with comprehensive hybrid detection visualization
+- SVG-based floorplan showing sensors, cues, and correlations
+- Toggle controls for motion sensors, secondary cues, and correlation lines
+- Correlation lines with confidence-based opacity and animation
+- Detection method badges (M=Motion, C=Cue, H=Hybrid)
+- Interactive timeline with motion/cue/hybrid event tracking
+- Tooltips for sensor and cue details
+- Real-time statistics (motion events, cue events, hybrid detections, active correlations)
+- Legend showing color coding for each detection type
+- Configurable visualization options (colors, opacity, timeline duration)
 
 **Dependencies:** 12.1, 6.2, 11.1
 
