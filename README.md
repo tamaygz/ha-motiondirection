@@ -54,9 +54,28 @@ HA-MotionDirection is a powerful Home Assistant custom integration that intellig
 2. Click **Add Integration**
 3. Search for "Motion Direction"
 4. Follow the configuration wizard:
-   - Set your update interval (default: 5 seconds)
-   - Configure confidence threshold (default: 0.7)
-   - Set time window for correlation (default: 5 seconds)
+   - Name your floorplan
+   - Set floorplan dimensions
+   - Select motion sensors
+   - Configure zones (optional)
+   - Add secondary cues (optional)
+   - Calibrate detection parameters
+
+### Enable Dashboard Cards (One-Time)
+
+After installation, enable the custom dashboard cards:
+
+1. A notification will appear with instructions
+2. Go to **Settings → Dashboards → Resources**
+3. Click **Add Resource**
+4. Set URL to: `/hacsfiles/ha-motiondirection/card-loader.js`
+5. Set Resource Type to: **JavaScript Module**
+6. Click **Create**
+7. Hard refresh your browser (Ctrl+Shift+R or Cmd+Shift+R)
+
+All 9 custom cards will now be available in the card picker!
+
+**See [INSTALLATION.md](INSTALLATION.md) for detailed setup instructions and troubleshooting.**
 
 ### Configure Your Floorplan
 

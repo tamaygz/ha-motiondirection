@@ -7,6 +7,7 @@ visual floorplan configuration, trigger zones, and secondary cues.
 """
 import asyncio
 import logging
+import os
 from typing import Any
 
 import voluptuous as vol
@@ -43,7 +44,82 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
         True if setup was successful
     """
     hass.data.setdefault(DOMAIN, {})
+    
+    # Register frontend resources
+    await _async_register_frontend_resources(hass)
+    
     return True
+
+
+async def _async_register_frontend_resources(hass: HomeAssistant) -> None:
+    """Register frontend resources for custom cards.
+    
+    Args:
+        hass: Home Assistant instance
+    """
+    # Get the integration directory path
+    integration_dir = os.path.dirname(__file__)
+    frontend_dir = os.path.join(integration_dir, "frontend")
+    
+    # Verify frontend directory exists
+    if not os.path.isdir(frontend_dir):
+        _LOGGER.error("Frontend directory not found at %s", frontend_dir)
+        return
+    
+    # Register static path for frontend resources
+    # This makes files accessible at /hacsfiles/ha-motiondirection/
+    hass.http.register_static_path(
+        "/hacsfiles/ha-motiondirection",
+        frontend_dir,
+        cache_headers=True,
+    )
+    
+    _LOGGER.info("Registered frontend resources at /hacsfiles/ha-motiondirection/")
+    
+    # Also register at /local/community/ for HACS compatibility
+    hass.http.register_static_path(
+        f"/local/community/{DOMAIN}",
+        frontend_dir,
+        cache_headers=True,
+    )
+    
+    _LOGGER.info("Registered frontend resources at /local/community/%s/", DOMAIN)
+    
+    # Try to register the card loader with the frontend
+    # The card-loader.js will auto-register all cards when loaded
+    try:
+        # Import the lovelace config to check if we can register resources
+        from homeassistant.components.lovelace import dashboard
+        
+        # Check if lovelace is loaded
+        if "lovelace" in hass.data:
+            _LOGGER.info(
+                "Lovelace integration detected. Cards will be auto-registered via card-loader.js"
+            )
+            # The card-loader.js will be loaded automatically when users access the frontend
+            # and will register all cards in window.customCards
+        else:
+            _LOGGER.info(
+                "Lovelace integration not yet loaded. "
+                "Cards will be available after Lovelace initializes."
+            )
+    except ImportError:
+        _LOGGER.debug("Lovelace import not available, using static path only")
+    except Exception as err:
+        _LOGGER.debug(
+            "Could not check lovelace status: %s. Frontend resources are still available.",
+            err,
+        )
+    
+    # Log instructions for users
+    _LOGGER.info(
+        "Motion Direction cards are available. "
+        "To use them, add the card-loader.js as a Lovelace resource:\n"
+        "URL: /hacsfiles/ha-motiondirection/card-loader.js\n"
+        "Type: JavaScript Module\n"
+        "Or access individual cards at /hacsfiles/ha-motiondirection/<card-name>.js"
+    )
+
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
@@ -77,7 +153,60 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     # Register services
     await async_register_services(hass)
     
+    # Create a persistent notification about frontend cards
+    await _async_notify_frontend_setup(hass, entry)
+    
     return True
+
+
+async def _async_notify_frontend_setup(hass: HomeAssistant, entry: ConfigEntry) -> None:
+    """Create a notification about frontend card setup.
+    
+    Args:
+        hass: Home Assistant instance
+        entry: Config entry
+    """
+    # Check if user has already been notified for this entry
+    notification_key = f"{DOMAIN}_frontend_setup_{entry.entry_id}"
+    
+    if hass.data[DOMAIN].get(notification_key):
+        return  # Already notified
+    
+    # Create persistent notification with instructions
+    await hass.services.async_call(
+        "persistent_notification",
+        "create",
+        {
+            "title": "Motion Direction - Frontend Cards Available",
+            "message": (
+                "**Motion Direction custom cards are now available!**\n\n"
+                "To use the dashboard cards, add this resource to Lovelace:\n\n"
+                "1. Go to **Settings → Dashboards → Resources**\n"
+                "2. Click **Add Resource**\n"
+                "3. Set URL to: `/hacsfiles/ha-motiondirection/card-loader.js`\n"
+                "4. Set Resource Type to: **JavaScript Module**\n"
+                "5. Click **Create**\n\n"
+                "This will register all 9 custom cards:\n"
+                "- Motion Status Card\n"
+                "- Floorplan Editor Card\n"
+                "- Motion Visualizer Card\n"
+                "- Zone Status & Editor Cards\n"
+                "- Zone Flow Visualizer Card\n"
+                "- Cue Status & Editor Cards\n"
+                "- Hybrid Visualizer Card\n\n"
+                "After adding the resource, hard refresh your browser (Ctrl+Shift+R) "
+                "and the cards will appear in the card picker.\n\n"
+                "[View Documentation](https://github.com/tamaygz/ha-motiondirection)"
+            ),
+            "notification_id": f"{DOMAIN}_frontend_setup",
+        },
+    )
+    
+    # Mark as notified
+    hass.data[DOMAIN][notification_key] = True
+    
+    _LOGGER.info("Created frontend setup notification for user")
+
 
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
