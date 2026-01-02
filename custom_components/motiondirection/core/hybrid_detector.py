@@ -16,6 +16,7 @@ from ..models import (
     SecondaryCue,
     StateChange,
 )
+from .cue_type_registry import CueTypeRegistry
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -162,11 +163,8 @@ class HybridMotionDetector:
         # Add to buffer
         self.motion_buffer.append(event)
         
-        # Find correlated cues
-        correlated_cues = self._find_correlated_cues(
-            event,
-            time_window=5000,  # 5 seconds
-        )
+        # Find correlated cues (using dynamic time windows per cue type)
+        correlated_cues = self._find_correlated_cues_dynamic(event)
         
         # Determine detection method
         if len(self.motion_buffer) >= 2:
@@ -261,6 +259,50 @@ class HybridMotionDetector:
         
         return None
     
+    def _find_correlated_cues_dynamic(
+        self,
+        motion: MotionEvent,
+    ) -> List[CueEvent]:
+        """Find cues that correlate with motion event using type-specific windows.
+        
+        Uses the CueTypeRegistry to get appropriate correlation windows for each
+        cue type, improving accuracy by respecting the typical response times
+        of different cue types.
+        
+        Args:
+            motion: Motion event
+        
+        Returns:
+            List of correlated cue events
+        """
+        correlated = []
+        motion_time = motion.timestamp
+        
+        for cue_event in self.cue_buffer:
+            # Get cue-type-specific correlation window from registry
+            time_window = CueTypeRegistry.get_correlation_window(
+                cue_event.cue.cue_type
+            )
+            
+            # Check temporal correlation
+            time_diff = abs(
+                (cue_event.timestamp - motion_time).total_seconds() * 1000
+            )
+            
+            if time_diff <= time_window:
+                # Check spatial correlation
+                if self._is_spatially_correlated(motion, cue_event):
+                    correlated.append(cue_event)
+                    _LOGGER.debug(
+                        "Cue %s correlated (type=%s, window=%dms, diff=%.0fms)",
+                        cue_event.cue.id,
+                        cue_event.cue.cue_type,
+                        time_window,
+                        time_diff,
+                    )
+        
+        return correlated
+    
     def _find_correlated_cues(
         self,
         motion: MotionEvent,
@@ -268,7 +310,8 @@ class HybridMotionDetector:
     ) -> List[CueEvent]:
         """Find cues that correlate with motion event.
         
-        Uses temporal and spatial correlation.
+        Uses temporal and spatial correlation with a fixed time window.
+        Deprecated: Use _find_correlated_cues_dynamic() instead.
         
         Args:
             motion: Motion event

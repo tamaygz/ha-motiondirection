@@ -402,20 +402,24 @@
 ## 6. Secondary Cues System
 
 ### 6.1 Cue Type Registry
-**Status:** 🔴 Not Started  
+**Status:** � Complete  
 **Complexity:** Medium  
 **Specs Reference:** Lines 481-598  
 **Description:** Implement the registry of supported cue types and their behaviors.
 
 **Tasks:**
-- [ ] Create `core/cue_type_registry.py` with CueTypeRegistry class
-- [ ] Define 8 cue types with configurations: door, light, switch, presence, temperature, vibration, power, media (Lines 483-584)
-- [ ] Implement `get_cue_config()` class method (Lines 586-589)
-- [ ] Implement `is_valid_cue_type()` class method (Lines 591-594)
-- [ ] Store default confidence levels per type
-- [ ] Store typical correlation windows per type
-- [ ] Store default directional hints per type
-- [ ] Support bidirectional cues
+- [x] Create `core/cue_type_registry.py` with CueTypeRegistry class
+- [x] Define 8 cue types with configurations: door, light, switch, presence, temperature, vibration, power, media (Lines 483-584)
+- [x] Implement `get_cue_config()` class method (Lines 586-589)
+- [x] Implement `is_valid_cue_type()` class method (Lines 591-594)
+- [x] Store default confidence levels per type
+- [x] Store typical correlation windows per type
+- [x] Store default directional hints per type
+- [x] Support bidirectional cues
+- [x] Add extensibility via `register_custom_type()` method
+- [x] Add helper methods for registry access
+- [x] Update HybridMotionDetector to use registry for correlation windows
+- [x] Export CueTypeRegistry from core/__init__.py
 
 **Dependencies:** 2.4
 
@@ -620,22 +624,26 @@
 ---
 
 ### 8.2 YAML Configuration Parser
-**Status:** 🔴 Not Started  
+**Status:** � Complete  
 **Complexity:** Medium  
 **Specs Reference:** Lines 905-1044  
 **Description:** Implement YAML configuration schema validation and parsing.
 
 **Tasks:**
-- [ ] Implement global settings parser (time_window, confidence_threshold, etc.)
-- [ ] Implement floorplan configuration parser
-- [ ] Implement sensors list parser with validation
-- [ ] Implement zones list parser with polygon validation
-- [ ] Implement secondary_cues list parser
-- [ ] Implement advanced settings parser (debounce, interpolation, sensitivity)
-- [ ] Implement per-sensor configuration parser (Lines 1022-1030)
-- [ ] Implement cue_learning configuration parser (Lines 1032-1044)
-- [ ] Add schema validation using voluptuous
-- [ ] Provide helpful error messages for invalid configs
+- [x] Implement global settings parser (time_window, confidence_threshold, etc.)
+- [x] Implement floorplan configuration parser
+- [x] Implement sensors list parser with validation
+- [x] Implement zones list parser with polygon validation
+- [x] Implement secondary_cues list parser
+- [x] Implement advanced settings parser (debounce, interpolation, sensitivity)
+- [x] Implement per-sensor configuration parser (Lines 1022-1030)
+- [x] Implement cue_learning configuration parser (Lines 1032-1044)
+- [x] Add schema validation using voluptuous
+- [x] Provide helpful error messages for invalid configs
+- [x] Validate position coordinates within floorplan bounds
+- [x] Validate polygon geometry (minimum 3 points)
+- [x] Validate zone directions
+- [x] Cross-reference validation (sensor_config vs actual sensors)
 
 **Dependencies:** 2.2, 2.3, 2.4
 
@@ -1471,21 +1479,24 @@
 ---
 
 ### 17.3 Developer Documentation
-**Status:** 🟡 In Progress  
+**Status:** � Complete  
 **Complexity:** Medium  
 **Specs Reference:** Lines 2396-2459  
 **Description:** Create developer documentation and contribution guidelines.
 
 **Tasks:**
-- [ ] Write CONTRIBUTING.md (Lines 2396-2452)
-- [ ] Document code standards (PEP 8, type hints)
-- [ ] Document development setup (Lines 2403-2417)
-- [ ] Document PR process (Lines 2419-2426)
-- [ ] Document commit message format (Lines 2428-2441)
-- [ ] Create code review checklist (Lines 2443-2449)
-- [ ] Document architecture and design patterns
-- [ ] Create DEVELOPER_GUIDE.md
-- [ ] Document testing requirements
+- [x] Write CONTRIBUTING.md (Lines 2396-2452)
+- [x] Document code standards (PEP 8, type hints)
+- [x] Document development setup (Lines 2403-2417)
+- [x] Document PR process (Lines 2419-2426)
+- [x] Document commit message format (Lines 2428-2441)
+- [x] Create code review checklist (Lines 2443-2449)
+- [x] Document architecture and design patterns
+- [x] Create DEVELOPER_GUIDE.md with comprehensive coverage
+- [x] Document testing requirements
+- [x] Add debugging tips and performance considerations
+- [x] Document all core components in detail
+- [x] Provide extension point examples
 
 **Dependencies:** 1.3, 15.1-15.4
 
