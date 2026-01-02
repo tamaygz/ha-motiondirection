@@ -83,6 +83,8 @@ class MotionDirectionCoordinator(DataUpdateCoordinator):
         self.motion_detected: bool = False
         self.anomaly_detected: bool = False
         self.active_zones: list[str] = []
+        self.last_sequence: Any | None = None  # Last motion sequence for anomaly detection
+        self._recent_events: list[Any] = []  # Recent motion events for sequence building
         
         _LOGGER.info(
             "MotionDirectionCoordinator initialized for floorplan: %s",
@@ -370,3 +372,191 @@ class MotionDirectionCoordinator(DataUpdateCoordinator):
             List of detection results from test mode
         """
         return getattr(self, "_test_detections", [])
+    
+    def detect_anomaly(
+        self,
+        current_result: DirectionResult | None = None,
+        sensitivity: float = 0.7,
+    ) -> tuple[bool, float, str, str | None, str | None]:
+        """Detect anomalies in motion patterns.
+        
+        Compares current detection against learned patterns to detect unusual behavior.
+        
+        Args:
+            current_result: Current direction result to check (uses last_direction if None)
+            sensitivity: Anomaly detection sensitivity (0.0-1.0, higher = more sensitive)
+            
+        Returns:
+            Tuple of (is_anomaly, anomaly_score, anomaly_type, expected_pattern, actual_pattern)
+        """
+        if current_result is None:
+            current_result = self.last_direction
+        
+        if not current_result:
+            return (False, 0.0, "", None, None)
+        
+        # Get learned patterns from pattern analyzer
+        learned_patterns = self.pattern_analyzer.learned_patterns
+        
+        if not learned_patterns:
+            # No learned patterns yet - cannot detect anomalies
+            return (False, 0.0, "", None, None)
+        
+        # Create simple signature from current result
+        current_signature = current_result.motion_sensor_id if current_result.motion_sensor_id else "unknown"
+        current_direction = current_result.direction
+        
+        # Check if current pattern matches any learned patterns
+        max_similarity = 0.0
+        best_match = None
+        
+        for signature, learned in learned_patterns.items():
+            # Simple similarity: check if sensor is in learned pattern
+            if current_signature in signature:
+                similarity = 0.8  # High similarity if sensor matches
+                
+                # Check direction too
+                if learned.example and hasattr(learned.example, "direction"):
+                    if learned.example.direction == current_direction:
+                        similarity = 1.0  # Perfect match
+                
+                if similarity > max_similarity:
+                    max_similarity = similarity
+                    best_match = learned
+        
+        # Calculate anomaly score (1.0 = completely different, 0.0 = perfect match)
+        anomaly_score = 1.0 - max_similarity
+        
+        # Determine if this is an anomaly based on sensitivity threshold
+        is_anomaly = anomaly_score > sensitivity
+        
+        if not is_anomaly:
+            return (False, anomaly_score, "", None, None)
+        
+        # Determine anomaly type based on confidence and method
+        if current_result.confidence < 0.5:
+            anomaly_type = "unusual_timing"
+        elif current_result.method == "insufficient_data":
+            anomaly_type = "unexpected_path"
+        else:
+            anomaly_type = "wrong_direction"
+        
+        # Format patterns for display
+        expected = best_match.signature if best_match else "unknown"
+        actual = f"{current_signature}->{current_direction}"
+        
+        _LOGGER.info(
+            "Anomaly detected: score=%.2f, type=%s, expected=%s, actual=%s",
+            anomaly_score,
+            anomaly_type,
+            expected,
+            actual,
+        )
+        
+        return (is_anomaly, anomaly_score, anomaly_type, expected, actual)
+    
+    def _calculate_pattern_similarity_deprecated(self, signature1: str, signature2: str) -> float:
+        """Calculate similarity between two pattern signatures.
+        
+        Args:
+            signature1: First pattern signature
+            signature2: Second pattern signature
+            
+        Returns:
+            Similarity score (0.0-1.0)
+        """
+        # Simple string similarity using common subsequence
+        sensors1 = signature1.split("->")
+        sensors2 = signature2.split("->")
+        
+        # Calculate overlap
+        common = len(set(sensors1) & set(sensors2))
+        total = max(len(sensors1), len(sensors2))
+        
+        if total == 0:
+            return 0.0
+        
+        # Base similarity on sensor overlap
+        overlap_similarity = common / total
+        
+        # Adjust for sequence order (Levenshtein-like)
+        sequence_similarity = self._sequence_similarity(sensors1, sensors2)
+        
+        # Weighted average
+        return (overlap_similarity * 0.4) + (sequence_similarity * 0.6)
+    
+    def _sequence_similarity(self, seq1: list[str], seq2: list[str]) -> float:
+        """Calculate similarity between two sequences.
+        
+        Args:
+            seq1: First sequence
+            seq2: Second sequence
+            
+        Returns:
+            Similarity score (0.0-1.0)
+        """
+        if not seq1 or not seq2:
+            return 0.0
+        
+        # Simple dynamic programming approach
+        m, n = len(seq1), len(seq2)
+        dp = [[0] * (n + 1) for _ in range(m + 1)]
+        
+        for i in range(1, m + 1):
+            for j in range(1, n + 1):
+                if seq1[i - 1] == seq2[j - 1]:
+                    dp[i][j] = dp[i - 1][j - 1] + 1
+                else:
+                    dp[i][j] = max(dp[i - 1][j], dp[i][j - 1])
+        
+        # Longest common subsequence length
+        lcs_length = dp[m][n]
+        
+        # Normalize by average length
+        avg_length = (m + n) / 2
+        return lcs_length / avg_length if avg_length > 0 else 0.0
+    
+    def _determine_anomaly_type(
+        self,
+        current: Any,
+        expected: Any | None,
+    ) -> str:
+        """Determine the type of anomaly detected.
+        
+        Args:
+            current: Current motion sequence
+            expected: Expected motion sequence (or None)
+            
+        Returns:
+            Anomaly type: unexpected_path, unusual_timing, or wrong_direction
+        """
+        if not expected:
+            return "unexpected_path"
+        
+        # Check timing differences
+        if abs(current.total_duration_ms - expected.total_duration_ms) > 2000:
+            return "unusual_timing"
+        
+        # Check if direction is reversed
+        current_sensors = [e.sensor.id for e in current.events]
+        expected_sensors = [e.sensor.id for e in expected.events]
+        
+        if current_sensors == expected_sensors[::-1]:
+            return "wrong_direction"
+        
+        # Default to unexpected path
+        return "unexpected_path"
+    
+    def _format_pattern(self, learned: Any) -> str:
+        """Format learned pattern for display.
+        
+        Args:
+            learned: Learned pattern object
+            
+        Returns:
+            Formatted pattern string
+        """
+        if not learned or not learned.example:
+            return "unknown"
+        
+        return learned.signature

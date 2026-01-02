@@ -197,9 +197,39 @@ class MotionAnomalyBinarySensor(CoordinatorEntity, BinarySensorEntity):
     @callback
     def _handle_coordinator_update(self) -> None:
         """Handle updated data from the coordinator."""
-        # Placeholder for anomaly detection logic
-        # Would compare current pattern against learned patterns
-        # and calculate anomaly score
+        # Run anomaly detection if we have a recent direction result
+        if self.coordinator.last_direction:
+            # Detect anomalies using coordinator's detection logic
+            is_anomaly, score, anomaly_type, expected, actual = self.coordinator.detect_anomaly(
+                sensitivity=0.7,
+            )
+            
+            if is_anomaly:
+                self.set_anomaly(score, anomaly_type, expected, actual)
+                
+                # Fire anomaly event
+                from ..models.event_data import AnomalyDetectedEventData
+                from ..core.event_bus import create_timestamp
+                
+                self.coordinator.event_bus.fire_anomaly_detected(
+                    AnomalyDetectedEventData(
+                        anomaly_type=anomaly_type,
+                        anomaly_score=round(score, 2),
+                        expected_pattern=expected or "unknown",
+                        actual_pattern=actual or "unknown",
+                        confidence=self.coordinator.last_direction.confidence,
+                        triggered_sensors=[self.coordinator.last_direction.motion_sensor_id] if self.coordinator.last_direction.motion_sensor_id else [],
+                        timestamp=create_timestamp(),
+                    ),
+                )
+            else:
+                # Reset anomaly if no longer detected
+                if self._anomaly_score > 0:
+                    self._anomaly_score = 0.0
+                    self._anomaly_type = None
+                    self._expected_pattern = None
+                    self._actual_pattern = None
+                    self.coordinator.set_anomaly_state(False)
         
         self.async_write_ha_state()
     

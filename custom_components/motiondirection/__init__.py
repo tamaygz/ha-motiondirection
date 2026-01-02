@@ -525,15 +525,45 @@ async def async_register_services(hass: HomeAssistant) -> None:
         pattern_type = call.data.get("pattern_type", "all")
         min_confidence = call.data.get("min_confidence", 0.6)
         floorplan_id = call.data.get("floorplan_id")
+        learn_patterns = call.data.get("learn_patterns", False)
+        auto_apply = call.data.get("auto_apply", False)
         
-        _LOGGER.info("Analyze pattern service called: type=%s, min_confidence=%.2f", pattern_type, min_confidence)
+        _LOGGER.info("Analyze pattern service called: type=%s, min_confidence=%.2f, learn=%s", pattern_type, min_confidence, learn_patterns)
         
         coordinators = _get_coordinators(hass, floorplan_id)
         for coordinator in coordinators:
             try:
                 pattern_analyzer = coordinator.get_pattern_analyzer()
+                
+                # Get pattern statistics
                 stats = pattern_analyzer.get_pattern_statistics()
                 _LOGGER.info("Pattern analysis results: %s", stats)
+                
+                # Learn patterns if requested
+                if learn_patterns and len(pattern_analyzer.pattern_history) > 0:
+                    learned = pattern_analyzer.learn_patterns(
+                        list(pattern_analyzer.pattern_history),
+                        min_occurrences=10,
+                    )
+                    _LOGGER.info("Learned %d new patterns", len(learned))
+                    
+                    # Get suggestions
+                    suggestions = pattern_analyzer.get_pattern_suggestions_formatted(
+                        min_confidence=min_confidence,
+                        max_suggestions=10,
+                    )
+                    
+                    _LOGGER.info("Pattern suggestions: %s", suggestions)
+                    
+                    # Auto-apply if requested
+                    if auto_apply and suggestions:
+                        for suggestion in suggestions:
+                            if suggestion["confidence"] >= 0.8:  # High confidence threshold for auto-apply
+                                pattern_analyzer.apply_pattern(
+                                    suggestion["signature"],
+                                    auto_apply=True,
+                                )
+                
             except Exception as err:
                 _LOGGER.error("Error analyzing patterns: %s", err)
     

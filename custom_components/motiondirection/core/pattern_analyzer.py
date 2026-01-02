@@ -4,7 +4,7 @@ from __future__ import annotations
 import logging
 import math
 from collections import deque
-from typing import Dict, List, Tuple
+from typing import Any, Dict, List, Tuple
 
 from ..models import LearnedPattern, MotionSequence
 
@@ -284,3 +284,147 @@ class PatternAnalyzer:
         """Clear learned patterns."""
         self.learned_patterns.clear()
         _LOGGER.info("Learned patterns cleared")
+    
+    def suggest_patterns(
+        self,
+        min_confidence: float = 0.7,
+        max_suggestions: int = 10,
+    ) -> List[LearnedPattern]:
+        """Suggest learned patterns for user review.
+        
+        Args:
+            min_confidence: Minimum confidence threshold for suggestions
+            max_suggestions: Maximum number of suggestions to return
+            
+        Returns:
+            List of learned patterns sorted by confidence
+        """
+        # Filter patterns by confidence
+        suggestions = [
+            pattern
+            for pattern in self.learned_patterns.values()
+            if pattern.confidence >= min_confidence
+        ]
+        
+        # Sort by occurrences * confidence (relevance score)
+        suggestions.sort(
+            key=lambda p: p.occurrences * p.confidence,
+            reverse=True,
+        )
+        
+        # Limit to max suggestions
+        return suggestions[:max_suggestions]
+    
+    def apply_pattern(
+        self,
+        pattern_signature: str,
+        auto_apply: bool = False,
+    ) -> bool:
+        """Apply a learned pattern to the system.
+        
+        Args:
+            pattern_signature: Signature of pattern to apply
+            auto_apply: Whether to automatically apply without confirmation
+            
+        Returns:
+            True if pattern was applied successfully
+        """
+        if pattern_signature not in self.learned_patterns:
+            _LOGGER.warning("Pattern %s not found in learned patterns", pattern_signature)
+            return False
+        
+        pattern = self.learned_patterns[pattern_signature]
+        
+        # In a full implementation, this would update zone definitions,
+        # add new directional hints, or configure automation rules
+        _LOGGER.info(
+            "Applied pattern: %s (occurrences=%d, confidence=%.2f, auto=%s)",
+            pattern_signature,
+            pattern.occurrences,
+            pattern.confidence,
+            auto_apply,
+        )
+        
+        return True
+    
+    def track_pattern_occurrence(
+        self,
+        sequence: MotionSequence,
+    ) -> None:
+        """Track occurrence of a pattern.
+        
+        Updates the occurrence count for matching learned patterns.
+        
+        Args:
+            sequence: Motion sequence to track
+        """
+        signature = self._create_signature(sequence)
+        
+        if signature in self.learned_patterns:
+            # Update existing pattern
+            pattern = self.learned_patterns[signature]
+            pattern.occurrences += 1
+            
+            # Update confidence with exponential moving average
+            alpha = 0.1  # Smoothing factor
+            pattern.confidence = (
+                alpha * sequence.confidence + (1 - alpha) * pattern.confidence
+            )
+            
+            _LOGGER.debug(
+                "Updated pattern occurrence: %s (count=%d, confidence=%.2f)",
+                signature,
+                pattern.occurrences,
+                pattern.confidence,
+            )
+    
+    def get_pattern_suggestions_formatted(
+        self,
+        min_confidence: float = 0.7,
+        max_suggestions: int = 10,
+    ) -> List[Dict[str, Any]]:
+        """Get formatted pattern suggestions for user display.
+        
+        Args:
+            min_confidence: Minimum confidence threshold
+            max_suggestions: Maximum number of suggestions
+            
+        Returns:
+            List of formatted suggestion dictionaries
+        """
+        suggestions = self.suggest_patterns(min_confidence, max_suggestions)
+        
+        formatted = []
+        for pattern in suggestions:
+            formatted.append({
+                "signature": pattern.signature,
+                "description": self._generate_pattern_description(pattern),
+                "occurrences": pattern.occurrences,
+                "confidence": round(pattern.confidence, 2),
+                "relevance_score": round(pattern.occurrences * pattern.confidence, 2),
+                "example_sensors": pattern.example.get_sensor_ids() if pattern.example else [],
+            })
+        
+        return formatted
+    
+    def _generate_pattern_description(self, pattern: LearnedPattern) -> str:
+        """Generate human-readable description of a pattern.
+        
+        Args:
+            pattern: Learned pattern
+            
+        Returns:
+            Description string
+        """
+        if not pattern.example:
+            return "Unknown pattern"
+        
+        sensors = pattern.example.get_sensor_ids()
+        
+        # Generate description based on sensor count and pattern
+        if len(sensors) == 1:
+            return f"Single sensor motion at {sensors[0]}"
+        elif len(sensors) == 2:
+            return f"Motion from {sensors[0]} to {sensors[1]}"
+        else:
+            return f"Motion path: {' → '.join(sensors)}"

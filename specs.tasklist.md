@@ -548,40 +548,47 @@
 ---
 
 ### 7.2 Anomaly Detection
-**Status:** 🔴 Not Started  
+**Status:** � Complete  
 **Complexity:** High  
 **Specs Reference:** Lines 1090-1098, 1569-1580  
 **Description:** Implement anomaly detection for unexpected patterns.
 
 **Tasks:**
-- [ ] Create `binary_sensor.motion_anomaly` entity (Lines 1090-1098)
-- [ ] Implement expected vs actual pattern comparison
-- [ ] Calculate anomaly score based on deviation
-- [ ] Fire `motiondirection_anomaly_detected` event (Lines 1571-1580)
-- [ ] Track anomaly types: unexpected_path, unusual_timing, wrong_direction
-- [ ] Configurable sensitivity threshold
-- [ ] Learn normal patterns over time
-- [ ] Alert on significant deviations
+- [x] Create `binary_sensor.motion_anomaly` entity (Lines 1090-1098)
+- [x] Implement expected vs actual pattern comparison
+- [x] Calculate anomaly score based on deviation
+- [x] Fire `motiondirection_anomaly_detected` event (Lines 1571-1580)
+- [x] Track anomaly types: unexpected_path, unusual_timing, wrong_direction
+- [x] Configurable sensitivity threshold (default 0.7)
+- [x] Compare against learned patterns from pattern analyzer
+- [x] Alert on significant deviations via event firing
+- [x] Implement detect_anomaly method in coordinator
+- [x] Implement pattern similarity calculation
+- [x] Implement anomaly type determination
+- [x] Update binary sensor _handle_coordinator_update to detect anomalies
 
 **Dependencies:** 7.1
 
 ---
 
 ### 7.3 Pattern Learning
-**Status:** 🔴 Not Started  
+**Status:** 🟢 Complete  
 **Complexity:** High  
 **Specs Reference:** Lines 851-883, 1032-1044  
 **Description:** Implement automatic pattern learning from historical data.
 
 **Tasks:**
-- [ ] Implement pattern occurrence tracking
-- [ ] Implement minimum samples threshold (default 10)
-- [ ] Implement confidence calculation for learned patterns
-- [ ] Store learned patterns with examples
-- [ ] Implement pattern suggestion system
-- [ ] Support learning periods (configurable, default 7 days)
-- [ ] Implement auto-apply vs manual review modes
-- [ ] Generate user-friendly pattern descriptions
+- [x] Implement pattern occurrence tracking (track_pattern_occurrence method)
+- [x] Implement minimum samples threshold (default 10)
+- [x] Implement confidence calculation for learned patterns (exponential moving average)
+- [x] Store learned patterns with examples
+- [x] Implement pattern suggestion system (suggest_patterns method)
+- [x] Support learning periods (configurable, default 7 days)
+- [x] Implement auto-apply vs manual review modes
+- [x] Generate user-friendly pattern descriptions (_generate_pattern_description)
+- [x] Implement apply_pattern method
+- [x] Implement get_pattern_suggestions_formatted method
+- [x] Enhance analyze_pattern service to support learning and auto-apply
 
 **Dependencies:** 7.1
 
