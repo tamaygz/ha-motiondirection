@@ -28,6 +28,9 @@ PLATFORMS: list[Platform] = [
     Platform.BINARY_SENSOR,
 ]
 
+# Config schema - this integration is configured via UI (config entries only)
+CONFIG_SCHEMA = cv.config_entry_only_config_schema(DOMAIN)
+
 
 async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
     """Set up the Motion Direction component from YAML configuration.

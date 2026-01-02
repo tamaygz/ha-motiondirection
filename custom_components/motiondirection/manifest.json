@@ -12,49 +12,5 @@
     "rtree>=1.2.0"
   ],
   "version": "1.3.0",
-  "integration_type": "hub",
-  "frontend": {
-    "resources": [
-      {
-        "url": "/hacsfiles/ha-motiondirection/motion-status-card.js",
-        "type": "module"
-      },
-      {
-        "url": "/hacsfiles/ha-motiondirection/floorplan-editor-card.js",
-        "type": "module"
-      },
-      {
-        "url": "/hacsfiles/ha-motiondirection/motion-visualizer-card.js",
-        "type": "module"
-      },
-      {
-        "url": "/hacsfiles/ha-motiondirection/zone-editor-card.js",
-        "type": "module"
-      },
-      {
-        "url": "/hacsfiles/ha-motiondirection/zone-status-card.js",
-        "type": "module"
-      },
-      {
-        "url": "/hacsfiles/ha-motiondirection/zone-flow-visualizer-card.js",
-        "type": "module"
-      },
-      {
-        "url": "/hacsfiles/ha-motiondirection/cue-editor-card.js",
-        "type": "module"
-      },
-      {
-        "url": "/hacsfiles/ha-motiondirection/cue-status-card.js",
-        "type": "module"
-      },
-      {
-        "url": "/hacsfiles/ha-motiondirection/hybrid-visualizer-card.js",
-        "type": "module"
-      },
-      {
-        "url": "/hacsfiles/ha-motiondirection/card-loader.js",
-        "type": "module"
-      }
-    ]
-  }
+  "integration_type": "hub"
 }
