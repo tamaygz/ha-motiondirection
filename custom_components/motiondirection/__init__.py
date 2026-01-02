@@ -14,6 +14,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.typing import ConfigType
 
 from .const import DOMAIN
+from .coordinator import MotionDirectionCoordinator
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -50,9 +51,18 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """
     _LOGGER.info("Setting up Motion Direction integration")
     
-    # Store configuration data
+    # Get floorplan ID from config entry
+    floorplan_id = entry.data.get("floorplan_id", "default")
+    
+    # Create coordinator
+    coordinator = MotionDirectionCoordinator(hass, floorplan_id)
+    
+    # Fetch initial data
+    await coordinator.async_config_entry_first_refresh()
+    
+    # Store coordinator
     hass.data.setdefault(DOMAIN, {})
-    hass.data[DOMAIN][entry.entry_id] = entry.data
+    hass.data[DOMAIN][entry.entry_id] = coordinator
     
     # Forward entry setup to platforms
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
