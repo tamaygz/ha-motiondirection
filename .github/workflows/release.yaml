@@ -1,0 +1,65 @@
+name: Release
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install build twine
+
+      - name: Validate version matches tag
+        run: |
+          TAG_VERSION=${GITHUB_REF#refs/tags/v}
+          MANIFEST_VERSION=$(python -c "import json; print(json.load(open('custom_components/motiondirection/manifest.json'))['version'])")
+          HACS_VERSION=$(python -c "import json; print(json.load(open('hacs.json'))['version'])")
+          
+          echo "Tag version: $TAG_VERSION"
+          echo "Manifest version: $MANIFEST_VERSION"
+          echo "HACS version: $HACS_VERSION"
+          
+          if [ "$TAG_VERSION" != "$MANIFEST_VERSION" ]; then
+            echo "Error: Tag version ($TAG_VERSION) does not match manifest.json version ($MANIFEST_VERSION)"
+            exit 1
+          fi
+          
+          if [ "$TAG_VERSION" != "$HACS_VERSION" ]; then
+            echo "Error: Tag version ($TAG_VERSION) does not match hacs.json version ($HACS_VERSION)"
+            exit 1
+          fi
+
+      - name: Create release notes
+        run: |
+          python -c "
+          import re
+          with open('CHANGELOG.md', 'r') as f:
+              content = f.read()
+          # Extract the latest version section
+          match = re.search(r'## \[.*?\] - \d{4}-\d{2}-\d{2}\n(.*?)(?=\n## |\Z)', content, re.DOTALL)
+          if match:
+              with open('release_notes.md', 'w') as out:
+                  out.write(match.group(1).strip())
+          "
+
+      - name: Update release with notes
+        uses: softprops/action-gh-release@v1
+        with:
+          body_path: release_notes.md
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Notify success
+        run: echo "Release ${{ github.ref_name }} published successfully!"
