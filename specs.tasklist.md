@@ -170,82 +170,82 @@
 ## 3. Motion Detection Engine
 
 ### 3.1 Event Collection System
-**Status:** 🔴 Not Started  
+**Status:** � Complete  
 **Complexity:** High  
 **Specs Reference:** Lines 92-102  
 **Description:** Implement real-time motion sensor event monitoring and buffering.
 
 **Tasks:**
-- [ ] Create `core/event_collector.py` module
-- [ ] Implement state change subscription to HA motion sensors
-- [ ] Implement microsecond precision timestamping
-- [ ] Implement event buffering with configurable size (default 100)
-- [ ] Implement debounce logic to reduce noise
-- [ ] Implement event filtering for invalid/duplicate events
-- [ ] Add async/await pattern for non-blocking operation
-- [ ] Add event queue management
+- [x] Create `core/event_collector.py` module
+- [x] Implement state change subscription to HA motion sensors
+- [x] Implement microsecond precision timestamping
+- [x] Implement event buffering with configurable size (default 100)
+- [x] Implement debounce logic to reduce noise
+- [x] Implement event filtering for invalid/duplicate events
+- [x] Add async/await pattern for non-blocking operation
+- [x] Add event queue management
 
 **Dependencies:** 2.1, 1.2
 
 ---
 
 ### 3.2 Time Window Correlator
-**Status:** 🔴 Not Started  
+**Status:** � Complete  
 **Complexity:** High  
 **Specs Reference:** Lines 104-162, 2555-2568  
 **Description:** Implement temporal correlation of motion events.
 
 **Tasks:**
-- [ ] Create `core/motion_detector.py` with TimeWindowCorrelator class
-- [ ] Implement `correlate_events()` method (Lines 113-144)
-- [ ] Implement sliding window algorithm for event grouping
-- [ ] Support configurable window sizes (500ms - 30000ms, default 5000ms)
-- [ ] Implement event sorting by timestamp
-- [ ] Implement sequence formation logic
-- [ ] Filter sequences with < 2 events
-- [ ] Add window size validation and bounds checking
-- [ ] Implement algorithm from Appendix A.2 (Lines 2555-2568)
+- [x] Create `core/time_window_correlator.py` with TimeWindowCorrelator class
+- [x] Implement `correlate_events()` method (Lines 113-144)
+- [x] Implement sliding window algorithm for event grouping
+- [x] Support configurable window sizes (500ms - 30000ms, default 5000ms)
+- [x] Implement event sorting by timestamp
+- [x] Implement sequence formation logic
+- [x] Filter sequences with < 2 events
+- [x] Add window size validation and bounds checking
+- [x] Implement algorithm from Appendix A.2 (Lines 2555-2568)
 
 **Dependencies:** 2.1, 3.1
 
 ---
 
 ### 3.3 Vector Calculator
-**Status:** 🔴 Not Started  
+**Status:** � Complete  
 **Complexity:** High  
 **Specs Reference:** Lines 164-223, 2506-2552  
 **Description:** Implement direction vector calculation and confidence scoring.
 
 **Tasks:**
-- [ ] Create `core/vector_calculator.py` with VectorCalculator class
-- [ ] Implement `calculate_direction_vector()` for sensor pairs (Lines 169-180)
-- [ ] Implement `calculate_weighted_vector()` for multi-sensor sequences (Lines 182-203)
-- [ ] Implement `calculate_confidence()` with multi-factor scoring (Lines 205-223)
-- [ ] Implement confidence factors: sensor count, temporal consistency, spatial consistency, reliability
-- [ ] Use weighting: α=0.3 (sensor), β=0.2 (temporal), γ=0.2 (spatial), δ=0.3 (reliability) per Appendix A.3 (Lines 2570-2583)
-- [ ] Implement vector normalization
-- [ ] Implement detailed algorithm from Appendix A.1 (Lines 2506-2552)
-- [ ] Add bounds checking and error handling
+- [x] Create `core/vector_calculator.py` with VectorCalculator class
+- [x] Implement `calculate_direction_vector()` for sensor pairs (Lines 169-180)
+- [x] Implement `calculate_weighted_vector()` for multi-sensor sequences (Lines 182-203)
+- [x] Implement `calculate_confidence()` with multi-factor scoring (Lines 205-223)
+- [x] Implement confidence factors: sensor count, temporal consistency, spatial consistency, reliability
+- [x] Use weighting: α=0.3 (sensor), β=0.2 (temporal), γ=0.2 (spatial), δ=0.3 (reliability) per Appendix A.3 (Lines 2570-2583)
+- [x] Implement vector normalization
+- [x] Implement detailed algorithm from Appendix A.1 (Lines 2506-2552)
+- [x] Add bounds checking and error handling
 
 **Dependencies:** 2.1, 3.2
 
 ---
 
 ### 3.4 Direction Detector
-**Status:** 🔴 Not Started  
+**Status:** � Complete  
 **Complexity:** Medium  
 **Specs Reference:** Lines 92-223  
 **Description:** High-level motion direction detection orchestrator.
 
 **Tasks:**
-- [ ] Create main detection pipeline in `core/motion_detector.py`
-- [ ] Integrate event collector, correlator, and vector calculator
-- [ ] Implement direction naming (north, south, east, west, etc.) from vectors
-- [ ] Implement multi-sensor detection method
-- [ ] Add confidence thresholding (configurable, default 0.7)
-- [ ] Fire `motiondirection_motion_detected` events
-- [ ] Update `sensor.motion_direction` entity
-- [ ] Add proper error handling and logging
+- [x] Create main detection pipeline in `core/motion_detector.py`
+- [x] Integrate event collector, correlator, and vector calculator
+- [x] Implement direction naming (north, south, east, west, etc.) from vectors
+- [x] Implement multi-sensor detection method
+- [x] Add confidence thresholding (configurable, default 0.7)
+- [x] Fire `motiondirection_motion_detected` events
+- [x] Update callback mechanism for entity updates
+- [x] Add proper error handling and logging
 
 **Dependencies:** 3.1, 3.2, 3.3
 
