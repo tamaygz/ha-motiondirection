@@ -254,42 +254,42 @@
 ## 4. Floorplan Management
 
 ### 4.1 Floorplan Configuration
-**Status:** 🔴 Not Started  
+**Status:** � Complete  
 **Complexity:** Medium  
 **Specs Reference:** Lines 225-249  
 **Description:** Implement floorplan canvas configuration and management.
 
 **Tasks:**
-- [ ] Create `core/floorplan_manager.py` module
-- [ ] Implement floorplan creation with dimensions (width, height, scale)
-- [ ] Implement background image upload and storage
-- [ ] Implement grid configuration (enabled, size, snap-to-grid)
-- [ ] Implement layer management (z-index ordering)
-- [ ] Support pixel or meter-based coordinate systems
-- [ ] Validate floorplan configurations
-- [ ] Store floorplan data in HA storage
+- [x] Create `core/floorplan_manager.py` module
+- [x] Implement floorplan creation with dimensions (width, height, scale)
+- [x] Implement background image upload and storage
+- [x] Implement grid configuration (enabled, size, snap-to-grid)
+- [x] Implement layer management (z-index ordering)
+- [x] Support pixel or meter-based coordinate systems
+- [x] Validate floorplan configurations
+- [x] Store floorplan data in HA storage
 
 **Dependencies:** 2.2
 
 ---
 
 ### 4.2 Sensor Placement System
-**Status:** 🔴 Not Started  
+**Status:** � Complete  
 **Complexity:** High  
 **Specs Reference:** Lines 251-265  
 **Description:** Implement sensor discovery and placement on floorplan.
 
 **Tasks:**
-- [ ] Implement automatic entity discovery from HA registry
-- [ ] Filter for binary_sensor domain with motion/occupancy device classes
-- [ ] Implement sensor position storage (x, y coordinates)
-- [ ] Implement sensor range visualization (circular overlay)
-- [ ] Implement drag-and-drop position updates
-- [ ] Implement overlap detection algorithm
-- [ ] Show overlap warnings in UI
-- [ ] Implement snap-to-grid functionality
-- [ ] Support sensor range adjustment
-- [ ] Implement import/export of sensor configurations
+- [x] Implement automatic entity discovery from HA registry
+- [x] Filter for binary_sensor domain with motion/occupancy device classes
+- [x] Implement sensor position storage (x, y coordinates)
+- [x] Implement sensor range visualization (circular overlay)
+- [x] Implement drag-and-drop position updates
+- [x] Implement overlap detection algorithm
+- [x] Show overlap warnings in UI
+- [x] Implement snap-to-grid functionality
+- [x] Support sensor range adjustment
+- [x] Implement import/export of sensor configurations
 
 **Dependencies:** 4.1, 2.1
 
@@ -298,22 +298,22 @@
 ## 5. Trigger Zones System
 
 ### 5.1 Zone Manager Core
-**Status:** 🔴 Not Started  
+**Status:** � Complete  
 **Complexity:** High  
 **Specs Reference:** Lines 342-423  
 **Description:** Implement zone management and transition detection.
 
 **Tasks:**
-- [ ] Create `core/zone_manager.py` with TriggerZoneManager class
-- [ ] Implement zone storage and retrieval (Lines 347-349)
-- [ ] Implement `detect_zone_transition()` method (Lines 351-393)
-- [ ] Implement `_find_entry_point()` method (Lines 395-399)
-- [ ] Implement `_find_exit_point()` method (Lines 401-407)
-- [ ] Implement `_match_direction()` method (Lines 409-421)
-- [ ] Implement `_calculate_dwell_time()` method (Lines 423-430)
-- [ ] Implement `_calculate_zone_confidence()` method (Lines 432-441)
-- [ ] Track active transits
-- [ ] Handle multi-zone scenarios
+- [x] Create `core/zone_manager.py` with TriggerZoneManager class
+- [x] Implement zone storage and retrieval (Lines 347-349)
+- [x] Implement `detect_zone_transition()` method (Lines 351-393)
+- [x] Implement `_find_entry_point()` method (Lines 395-399)
+- [x] Implement `_find_exit_point()` method (Lines 401-407)
+- [x] Implement `_match_direction()` method (Lines 409-421)
+- [x] Implement `_calculate_dwell_time()` method (Lines 423-430)
+- [x] Implement `_calculate_zone_confidence()` method (Lines 432-441)
+- [x] Track active transits
+- [x] Handle multi-zone scenarios
 
 **Dependencies:** 2.3, 3.3
 
@@ -422,23 +422,23 @@
 ---
 
 ### 6.2 Hybrid Motion Detector
-**Status:** 🔴 Not Started  
+**Status:** � Complete  
 **Complexity:** High  
 **Specs Reference:** Lines 600-735  
 **Description:** Implement detection combining motion sensors with secondary cues.
 
 **Tasks:**
-- [ ] Create `core/secondary_cue.py` with HybridMotionDetector class
-- [ ] Implement motion and cue event buffering (Lines 607-609)
-- [ ] Implement `process_motion_event()` method (Lines 611-639)
-- [ ] Implement `_calculate_hybrid_direction()` method (Lines 641-671)
-- [ ] Implement `_find_correlated_cues()` method (Lines 673-690)
-- [ ] Implement `_is_spatially_correlated()` method (Lines 692-705)
-- [ ] Implement `_calculate_distance()` method (Lines 707-710)
-- [ ] Implement `_get_correlation_distance()` method (Lines 712-724)
-- [ ] Implement `_matches_state_change()` method (Lines 726-733)
-- [ ] Support detection methods: multi_sensor, hybrid, cue_assisted
-- [ ] Calculate combined confidence from multiple cues
+- [x] Create `core/hybrid_detector.py` with HybridMotionDetector class
+- [x] Implement motion and cue event buffering (Lines 607-609)
+- [x] Implement `process_motion_event()` method (Lines 611-639)
+- [x] Implement `_calculate_hybrid_direction()` method (Lines 641-671)
+- [x] Implement `_find_correlated_cues()` method (Lines 673-690)
+- [x] Implement `_is_spatially_correlated()` method (Lines 692-705)
+- [x] Implement `_calculate_distance()` method (Lines 707-710)
+- [x] Implement `_get_correlation_distance()` method (Lines 712-724)
+- [x] Implement `_matches_state_change()` method (Lines 726-733)
+- [x] Support detection methods: multi_sensor, hybrid, cue_assisted
+- [x] Calculate combined confidence from multiple cues
 
 **Dependencies:** 2.4, 3.3, 6.1
 
@@ -525,23 +525,23 @@
 ## 7. Pattern Analysis
 
 ### 7.1 Pattern Analyzer Core
-**Status:** 🔴 Not Started  
+**Status:** � Complete  
 **Complexity:** High  
 **Specs Reference:** Lines 737-903  
 **Description:** Implement pattern recognition and learning system.
 
 **Tasks:**
-- [ ] Create `core/pattern_analyzer.py` with PatternAnalyzer class
-- [ ] Implement `analyze_sequence()` method (Lines 755-777)
-- [ ] Implement `_is_linear()` method (Lines 779-803)
-- [ ] Implement `_is_circular()` method (Lines 805-820)
-- [ ] Implement `_is_zone_transition()` method (Lines 822-830)
-- [ ] Implement `_is_stationary()` method (Lines 832-849)
-- [ ] Implement `learn_patterns()` method (Lines 851-883)
-- [ ] Implement `_create_signature()` method (Lines 885-889)
-- [ ] Implement `_calculate_vector()` helper (Lines 891-901)
-- [ ] Support 6 pattern types: linear, circular, zone_transition, stationary, random, anomaly
-- [ ] Store pattern history (deque, maxlen=1000)
+- [x] Create `core/pattern_analyzer.py` with PatternAnalyzer class
+- [x] Implement `analyze_sequence()` method (Lines 755-777)
+- [x] Implement `_is_linear()` method (Lines 779-803)
+- [x] Implement `_is_circular()` method (Lines 805-820)
+- [x] Implement `_is_zone_transition()` method (Lines 822-830)
+- [x] Implement `_is_stationary()` method (Lines 832-849)
+- [x] Implement `learn_patterns()` method (Lines 851-883)
+- [x] Implement `_create_signature()` method (Lines 885-889)
+- [x] Implement `_calculate_vector()` helper (Lines 891-901)
+- [x] Support 6 pattern types: linear, circular, zone_transition, stationary, random, anomaly
+- [x] Store pattern history (deque, maxlen=1000)
 
 **Dependencies:** 2.5, 3.3
 
