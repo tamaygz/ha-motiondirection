@@ -66,23 +66,24 @@ async def _async_register_frontend_resources(hass: HomeAssistant) -> None:
         _LOGGER.error("Frontend directory not found at %s", frontend_dir)
         return
     
-    # Register static path for frontend resources
+    # Register static paths for frontend resources
     # This makes files accessible at /hacsfiles/ha-motiondirection/
-    hass.http.register_static_path(
-        "/hacsfiles/ha-motiondirection",
-        frontend_dir,
-        cache_headers=True,
+    await hass.http.async_register_static_paths(
+        [
+            {
+                "path": "/hacsfiles/ha-motiondirection",
+                "directory": frontend_dir,
+                "cache_headers": True,
+            },
+            {
+                "path": f"/local/community/{DOMAIN}",
+                "directory": frontend_dir,
+                "cache_headers": True,
+            },
+        ]
     )
     
     _LOGGER.info("Registered frontend resources at /hacsfiles/ha-motiondirection/")
-    
-    # Also register at /local/community/ for HACS compatibility
-    hass.http.register_static_path(
-        f"/local/community/{DOMAIN}",
-        frontend_dir,
-        cache_headers=True,
-    )
-    
     _LOGGER.info("Registered frontend resources at /local/community/%s/", DOMAIN)
     
     # Try to register the card loader with the frontend
