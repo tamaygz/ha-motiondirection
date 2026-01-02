@@ -1,4 +1,5 @@
 """Core detection and processing modules."""
+from .event_bus import EventBus
 from .event_collector import EventCollector
 from .floorplan_manager import FloorplanManager
 from .hybrid_detector import HybridMotionDetector
@@ -9,6 +10,7 @@ from .vector_calculator import VectorCalculator
 from .zone_manager import TriggerZoneManager
 
 __all__ = [
+    "EventBus",
     "EventCollector",
     "TimeWindowCorrelator",
     "VectorCalculator",

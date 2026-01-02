@@ -795,38 +795,38 @@
 ## 11. Event System
 
 ### 11.1 Event Bus Integration
-**Status:** 🔴 Not Started  
+**Status:** � Complete  
 **Complexity:** Medium  
 **Specs Reference:** Lines 1390-1580  
 **Description:** Implement event firing to Home Assistant event bus.
 
 **Tasks:**
-- [ ] Create event firing wrapper in core module
-- [ ] Fire motion events (Lines 1392-1426)
-- [ ] Fire zone events (Lines 1430-1502)
-- [ ] Fire cue events (Lines 1506-1567)
-- [ ] Fire anomaly events (Lines 1571-1580)
-- [ ] Include all required event data fields
-- [ ] Add event data validation
-- [ ] Add event logging for debugging
-- [ ] Implement event throttling if needed
+- [x] Create event firing wrapper in core module
+- [x] Fire motion events (Lines 1392-1426)
+- [x] Fire zone events (Lines 1430-1502)
+- [x] Fire cue events (Lines 1506-1567)
+- [x] Fire anomaly events (Lines 1571-1580)
+- [x] Include all required event data fields
+- [x] Add event data validation
+- [x] Add event logging for debugging
+- [x] Implement event throttling if needed
 
 **Dependencies:** 3.4, 5.1, 6.2, 7.2
 
 ---
 
 ### 11.2 Event Data Structures
-**Status:** 🔴 Not Started  
+**Status:** � Complete  
 **Complexity:** Low  
 **Specs Reference:** Lines 1390-1580  
 **Description:** Define event data schemas and validation.
 
 **Tasks:**
-- [ ] Create event data dataclasses in models/
-- [ ] Define schema for each event type
-- [ ] Add validation for required fields
-- [ ] Add serialization methods
-- [ ] Ensure JSON-serializable output
+- [x] Create event data dataclasses in models/
+- [x] Define schema for each event type
+- [x] Add validation for required fields
+- [x] Add serialization methods
+- [x] Ensure JSON-serializable output
 - [ ] Add event versioning support
 
 **Dependencies:** 2.1

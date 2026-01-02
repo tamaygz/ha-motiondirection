@@ -10,13 +10,21 @@ from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, Upda
 
 from .const import DOMAIN
 from .core import (
+    EventBus,
     FloorplanManager,
     HybridMotionDetector,
     MotionDetector,
     PatternAnalyzer,
     TriggerZoneManager,
 )
-from .models import DirectionResult, MotionEvent
+from .core.event_bus import create_timestamp
+from .models import (
+    DirectionResult,
+    HybridDetectionEventData,
+    MotionDetectedEventData,
+    MotionEvent,
+    PatternDetectedEventData,
+)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -58,6 +66,9 @@ class MotionDirectionCoordinator(DataUpdateCoordinator):
         )
         
         self.floorplan_id = floorplan_id
+        
+        # Initialize event bus
+        self.event_bus = EventBus(hass)
         
         # Initialize managers
         self.floorplan_manager = FloorplanManager(hass, floorplan_id)
@@ -116,6 +127,33 @@ class MotionDirectionCoordinator(DataUpdateCoordinator):
             if result:
                 self.last_direction = result
                 self.motion_detected = True
+                
+                # Fire motion detected event
+                motion_event_data = MotionDetectedEventData(
+                    direction=result.direction,
+                    confidence=result.confidence,
+                    detection_method=result.method,
+                    timestamp=create_timestamp(),
+                    vector=list(result.vector) if result.vector else None,
+                    speed=result.speed,
+                    triggered_sensors=[result.motion_sensor_id] if result.motion_sensor_id else [],
+                    contributing_cues=result.contributing_cues,
+                    cue_confidence=len(result.contributing_cues) * 0.1,  # Simplified calculation
+                )
+                self.event_bus.fire_motion_detected(motion_event_data)
+                
+                # Fire hybrid detection event if cues were used
+                if result.is_hybrid_detection and result.contributing_cues:
+                    hybrid_event_data = HybridDetectionEventData(
+                        direction=result.direction,
+                        motion_confidence=result.confidence,
+                        cue_confidence=len(result.contributing_cues) * 0.1,
+                        combined_confidence=result.confidence,
+                        timestamp=create_timestamp(),
+                        motion_sensor=result.motion_sensor_id,
+                        contributing_cues=result.contributing_cues,
+                    )
+                    self.event_bus.fire_hybrid_detection(hybrid_event_data)
                 
                 # Check zones - use detect_zone_transition method
                 # Note: Would need path data for full zone transition detection

@@ -1,5 +1,18 @@
 """Data models for Motion Direction integration."""
 from .cue_type_registry import CueTypeRegistry
+from .event_data import (
+    AnomalyDetectedEventData,
+    CueCorrelationDetectedEventData,
+    CuePatternLearnedEventData,
+    CueTriggeredEventData,
+    HybridDetectionEventData,
+    MotionDetectedEventData,
+    PatternDetectedEventData,
+    ZoneDirectionDetectedEventData,
+    ZoneEnteredEventData,
+    ZoneExitedEventData,
+    ZonePatternDetectedEventData,
+)
 from .floorplan import (
     BackgroundConfig,
     Floorplan,
@@ -33,4 +46,15 @@ __all__ = [
     "LearnedPattern",
     "ZoneTransition",
     "DirectionResult",
+    "MotionDetectedEventData",
+    "PatternDetectedEventData",
+    "ZoneEnteredEventData",
+    "ZoneExitedEventData",
+    "ZoneDirectionDetectedEventData",
+    "ZonePatternDetectedEventData",
+    "CueTriggeredEventData",
+    "HybridDetectionEventData",
+    "CueCorrelationDetectedEventData",
+    "CuePatternLearnedEventData",
+    "AnomalyDetectedEventData",
 ]
