@@ -1,3 +1,9 @@
+!!! DISCLAIMER !!!
+THIS IS A WORK IN PROGRESS. IT HASNT BEEN TESTED AND VERIFIED WORKING YET. 
+I saw people cloning it, so to prevent disappointment, the disclaimer.
+I think it needs a bit more work that currently I dont have time to get it all ready and working.
+!!! /DISCLAIMER !!!
+
 # HA-MotionDirection
 
 **Intelligent Motion Direction Detection for Home Assistant**
