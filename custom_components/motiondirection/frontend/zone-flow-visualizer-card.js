@@ -798,12 +798,12 @@ class MotionDirectionZoneFlowCard extends HTMLElement {
 }
 
 // Register custom element
-customElements.define('motiondirection-zone-flow-card', MotionDirectionZoneFlowCard);
+customElements.define('motiondirection-zone-flow-visualizer', MotionDirectionZoneFlowCard);
 
 // Register card with Home Assistant
 window.customCards = window.customCards || [];
 window.customCards.push({
-  type: 'motiondirection-zone-flow',
+  type: 'motiondirection-zone-flow-visualizer',
   name: 'MotionDirection Zone Flow Visualizer',
   description: 'Particle-based flow visualization showing zone transitions and motion patterns',
   preview: true,

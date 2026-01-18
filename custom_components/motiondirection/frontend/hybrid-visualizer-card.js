@@ -830,7 +830,7 @@ class MotionDirectionHybridVisualizerCard extends HTMLElement {
 }
 
 // Register custom element
-customElements.define('motiondirection-hybrid-visualizer-card', MotionDirectionHybridVisualizerCard);
+customElements.define('motiondirection-hybrid-visualizer', MotionDirectionHybridVisualizerCard);
 
 // Register card with Home Assistant
 window.customCards = window.customCards || [];

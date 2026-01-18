@@ -1379,16 +1379,41 @@ class FloorplanEditorCard extends HTMLElement {
       }
     `;
   }
+
+  /**
+   * Get editor configuration element
+   * Returns a custom element for UI configuration
+   */
+  static getConfigElement() {
+    return document.createElement('motiondirection-floorplan-editor-card-editor');
+  }
+
+  /**
+   * Get stub configuration for card picker
+   * Provides default configuration when adding card
+   */
+  static getStubConfig() {
+    return {
+      floorplan_id: 'default',
+      width: 800,
+      height: 600,
+      show_grid: true,
+      grid_size: 50,
+      show_sensors: true,
+      show_zones: true,
+      enable_editing: true,
+    };
+  }
 }
 
 // Register the custom card
-customElements.define('floorplan-editor-card', FloorplanEditorCard);
+customElements.define('motiondirection-floorplan-editor', FloorplanEditorCard);
 
 // Register with Home Assistant
 window.customCards = window.customCards || [];
 window.customCards.push({
-  type: 'floorplan-editor-card',
-  name: 'Floorplan Editor',
+  type: 'motiondirection-floorplan-editor',
+  name: 'MotionDirection Floorplan Editor',
   description: 'Interactive floorplan editor for MotionDirection integration with sensor placement, zone drawing, and real-time visualization',
   preview: true,
   documentationURL: 'https://github.com/tamaygz/ha-motiondirection#floorplan-editor-card',
