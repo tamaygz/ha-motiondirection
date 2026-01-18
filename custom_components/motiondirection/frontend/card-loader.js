@@ -221,15 +221,25 @@ function getCardExamples() {
 /**
  * Initialize card loader
  */
-function init() {
-  // Register cards immediately
-  registerCards();
-
-  // Load card modules when DOM is ready
+async function init() {
+  // Just load card modules - they will register themselves
+  // This ensures custom elements are defined when cards are registered
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', loadCardModules);
+    document.addEventListener('DOMContentLoaded', async () => {
+      await loadCardModules();
+      console.info(
+        '%c MOTIONDIRECTION-CARDS %c Loaded ' + MOTIONDIRECTION_CARDS.length + ' card modules ',
+        'color: white; background: #e91e63; font-weight: 700;',
+        'color: #e91e63; background: white; font-weight: 700;'
+      );
+    });
   } else {
-    loadCardModules();
+    await loadCardModules();
+    console.info(
+      '%c MOTIONDIRECTION-CARDS %c Loaded ' + MOTIONDIRECTION_CARDS.length + ' card modules ',
+      'color: white; background: #e91e63; font-weight: 700;',
+      'color: #e91e63; background: white; font-weight: 700;'
+    );
   }
 }
 
