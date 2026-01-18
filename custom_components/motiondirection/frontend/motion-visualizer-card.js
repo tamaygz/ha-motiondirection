@@ -853,12 +853,12 @@ class MotionDirectionVisualizerCard extends HTMLElement {
 }
 
 // Register custom element
-customElements.define('motiondirection-visualizer-card', MotionDirectionVisualizerCard);
+customElements.define('motiondirection-motion-visualizer-card', MotionDirectionVisualizerCard);
 
 // Register card with Home Assistant
 window.customCards = window.customCards || [];
 window.customCards.push({
-  type: 'motiondirection-visualizer',
+  type: 'motiondirection-motion-visualizer',
   name: 'MotionDirection Motion Visualizer',
   description: 'Real-time and historical motion visualization with trails, heat maps, and direction arrows',
   preview: true,

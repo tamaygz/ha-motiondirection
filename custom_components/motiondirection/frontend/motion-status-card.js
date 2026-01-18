@@ -513,16 +513,41 @@ class MotionStatusCard extends HTMLElement {
       }
     `;
   }
+
+  /**
+   * Get editor configuration element
+   * Returns a custom element for UI configuration
+   */
+  static getConfigElement() {
+    return document.createElement('motiondirection-motion-status-card-editor');
+  }
+
+  /**
+   * Get stub configuration for card picker
+   * Provides default configuration when adding card
+   */
+  static getStubConfig() {
+    return {
+      entity: 'sensor.motion_direction',
+      title: 'Motion Direction',
+      show_confidence: true,
+      show_zones: true,
+      show_sensors: true,
+      show_pattern: true,
+      show_cues: true,
+      update_interval: 1000,
+    };
+  }
 }
 
 // Register the custom card
-customElements.define('motion-status-card', MotionStatusCard);
+customElements.define('motiondirection-motion-status-card', MotionStatusCard);
 
 // Register with Home Assistant
 window.customCards = window.customCards || [];
 window.customCards.push({
-  type: 'motion-status-card',
-  name: 'Motion Direction Status',
+  type: 'motiondirection-motion-status',
+  name: 'MotionDirection Motion Status',
   description: 'Display current motion direction detection status with confidence, zones, and sensors',
   preview: true,
   documentationURL: 'https://github.com/tamaygz/ha-motiondirection#motion-status-card',

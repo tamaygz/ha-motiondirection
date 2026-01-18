@@ -90,6 +90,10 @@ async def _async_register_frontend_resources(hass: HomeAssistant) -> None:
             ", ".join(f.stem for f in card_files),
         )
         
+        # Automatically register the card-loader resource in Lovelace
+        # This allows all cards to be automatically loaded and appear in the card picker
+        await _async_register_lovelace_resource(hass)
+        
     except Exception as err:
         _LOGGER.error(
             "Failed to register frontend resources: %s. "
@@ -97,6 +101,58 @@ async def _async_register_frontend_resources(hass: HomeAssistant) -> None:
             err,
             exc_info=True,
         )
+
+
+async def _async_register_lovelace_resource(hass: HomeAssistant) -> None:
+    """Register the card-loader.js as a Lovelace resource automatically.
+    
+    This ensures all MotionDirection cards are loaded and available in the card picker
+    without requiring manual resource registration.
+    
+    Args:
+        hass: Home Assistant instance
+    """
+    try:
+        # Import the lovelace resources module
+        from homeassistant.components.lovelace.resources import async_get_collection
+        
+        # Get the lovelace resource collection
+        collection = async_get_collection(hass)
+        
+        # Define the resource URL
+        resource_url = "/hacsfiles/ha-motiondirection/card-loader.js"
+        
+        # Check if resource already exists
+        existing_resources = await collection.async_get_resources()
+        if any(resource.get("url") == resource_url for resource in existing_resources):
+            _LOGGER.debug("Card-loader resource already registered")
+            return
+        
+        # Create the resource
+        await collection.async_create_item({
+            "url": resource_url,
+            "res_type": "module",
+        })
+        
+        _LOGGER.info(
+            "Successfully registered card-loader.js as Lovelace resource. "
+            "All MotionDirection cards are now available in the card picker."
+        )
+        
+    except ImportError:
+        _LOGGER.warning(
+            "Could not import lovelace resources module. "
+            "Please manually add /hacsfiles/ha-motiondirection/card-loader.js "
+            "to Lovelace resources via Settings → Dashboards → Resources."
+        )
+    except Exception as err:
+        _LOGGER.warning(
+            "Could not automatically register card-loader resource: %s. "
+            "Please manually add /hacsfiles/ha-motiondirection/card-loader.js "
+            "to Lovelace resources via Settings → Dashboards → Resources.",
+            err,
+        )
+
 
 
 
@@ -155,18 +211,18 @@ async def _async_notify_frontend_setup(hass: HomeAssistant, entry: ConfigEntry) 
         "persistent_notification",
         "create",
         {
-            "title": "Motion Direction - Frontend Cards Available",
+            "title": "Motion Direction - Frontend Cards Ready",
             "message": (
-                "**Motion Direction custom cards are now available!**\n\n"
-                "The integration has automatically registered all frontend resources. "
-                "To use the dashboard cards, add the card loader to Lovelace:\n\n"
-                "**Quick Setup:**\n\n"
-                "1. Go to **Settings → Dashboards → Resources**\n"
-                "2. Click **Add Resource**\n"
-                "3. Set URL to: `/hacsfiles/ha-motiondirection/card-loader.js`\n"
-                "4. Set Resource Type to: **JavaScript Module**\n"
-                "5. Click **Create**\n"
-                "6. Hard refresh browser (Ctrl+Shift+R or Cmd+Shift+R)\n\n"
+                "**Motion Direction custom cards are automatically ready!**\n\n"
+                "The integration has automatically registered the card-loader resource. "
+                "All 9 custom cards should now be available in the card picker.\n\n"
+                "**If cards don't appear:**\n\n"
+                "1. Hard refresh your browser (Ctrl+Shift+R or Cmd+Shift+R)\n"
+                "2. Enable Advanced Mode in your profile settings\n"
+                "3. If still not visible, manually verify resource registration:\n"
+                "   - Go to **Settings → Dashboards → Resources**\n"
+                "   - Confirm `/hacsfiles/ha-motiondirection/card-loader.js` is listed\n"
+                "   - If missing, add it manually as a **JavaScript Module**\n\n"
                 "**Available Cards (9 total):**\n"
                 "- Motion Status Card - Current direction and confidence\n"
                 "- Floorplan Editor Card - Interactive sensor placement\n"
@@ -175,8 +231,8 @@ async def _async_notify_frontend_setup(hass: HomeAssistant, entry: ConfigEntry) 
                 "- Zone Flow Visualizer Card - Inter-zone movement\n"
                 "- Cue Status & Editor Cards - Secondary cue configuration\n"
                 "- Hybrid Visualizer Card - Combined detection view\n\n"
-                "After adding the resource and refreshing, all cards will appear "
-                "in the card picker when you click 'Add Card'.\n\n"
+                "All cards support UI configuration and can be added via "
+                "the 'Add Card' button in your dashboards.\n\n"
                 "[View Documentation](https://github.com/tamaygz/ha-motiondirection/blob/master/INSTALLATION.md)"
             ),
             "notification_id": f"{DOMAIN}_frontend_setup",
