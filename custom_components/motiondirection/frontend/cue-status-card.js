@@ -651,7 +651,7 @@ class MotionDirectionCueStatusCard extends HTMLElement {
 }
 
 // Register custom element
-customElements.define('motiondirection-cue-status-card', MotionDirectionCueStatusCard);
+customElements.define('motiondirection-cue-status', MotionDirectionCueStatusCard);
 
 // Register card with Home Assistant
 window.customCards = window.customCards || [];

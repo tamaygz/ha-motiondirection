@@ -581,7 +581,7 @@ class MotionDirectionZoneStatusCard extends HTMLElement {
 }
 
 // Register custom element
-customElements.define('motiondirection-zone-status-card', MotionDirectionZoneStatusCard);
+customElements.define('motiondirection-zone-status', MotionDirectionZoneStatusCard);
 
 // Register card with Home Assistant
 window.customCards = window.customCards || [];

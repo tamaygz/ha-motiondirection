@@ -1407,7 +1407,7 @@ class FloorplanEditorCard extends HTMLElement {
 }
 
 // Register the custom card
-customElements.define('motiondirection-floorplan-editor-card', FloorplanEditorCard);
+customElements.define('motiondirection-floorplan-editor', FloorplanEditorCard);
 
 // Register with Home Assistant
 window.customCards = window.customCards || [];

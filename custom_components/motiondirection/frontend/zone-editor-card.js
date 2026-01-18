@@ -1087,7 +1087,7 @@ class ZoneEditorCard extends HTMLElement {
 }
 
 // Register the custom card
-customElements.define('motiondirection-zone-editor-card', ZoneEditorCard);
+customElements.define('motiondirection-zone-editor', ZoneEditorCard);
 
 // Register with Home Assistant
 window.customCards = window.customCards || [];

@@ -798,7 +798,7 @@ class MotionDirectionZoneFlowCard extends HTMLElement {
 }
 
 // Register custom element
-customElements.define('motiondirection-zone-flow-visualizer-card', MotionDirectionZoneFlowCard);
+customElements.define('motiondirection-zone-flow-visualizer', MotionDirectionZoneFlowCard);
 
 // Register card with Home Assistant
 window.customCards = window.customCards || [];

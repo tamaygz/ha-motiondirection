@@ -106,7 +106,8 @@ async function loadCardModules() {
   const loadPromises = MOTIONDIRECTION_CARDS.map(async card => {
     try {
       // Check if module is already loaded
-      const elementName = card.type.replace('custom:', '').replace(/-/g, '');
+      // Extract element name from type (e.g., 'custom:motiondirection-motion-status' -> 'motiondirection-motion-status')
+      const elementName = card.type.replace('custom:', '');
       if (customElements.get(elementName)) {
         console.debug(`[MotionDirection] Card already loaded: ${card.type}`);
         return;

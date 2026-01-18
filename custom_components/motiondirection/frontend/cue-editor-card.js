@@ -1192,7 +1192,7 @@ class MotionDirectionCueEditorCard extends HTMLElement {
 }
 
 // Register custom element
-customElements.define('motiondirection-cue-editor-card', MotionDirectionCueEditorCard);
+customElements.define('motiondirection-cue-editor', MotionDirectionCueEditorCard);
 
 // Register card with Home Assistant
 window.customCards = window.customCards || [];
