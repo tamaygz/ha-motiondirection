@@ -1060,16 +1060,40 @@ class ZoneEditorCard extends HTMLElement {
       }
     `;
   }
+
+  /**
+   * Get editor configuration element
+   * Returns a custom element for UI configuration
+   */
+  static getConfigElement() {
+    return document.createElement('motiondirection-zone-editor-card-editor');
+  }
+
+  /**
+   * Get stub configuration for card picker
+   * Provides default configuration when adding card
+   */
+  static getStubConfig() {
+    return {
+      floorplan_id: 'default',
+      zone_id: '',
+      show_existing_zones: true,
+      enable_zone_editing: true,
+      enable_direction_config: true,
+      width: 800,
+      height: 600,
+    };
+  }
 }
 
 // Register the custom card
-customElements.define('zone-editor-card', ZoneEditorCard);
+customElements.define('motiondirection-zone-editor-card', ZoneEditorCard);
 
 // Register with Home Assistant
 window.customCards = window.customCards || [];
 window.customCards.push({
-  type: 'zone-editor-card',
-  name: 'Zone Editor',
+  type: 'motiondirection-zone-editor',
+  name: 'MotionDirection Zone Editor',
   description: 'Focused zone configuration and direction editor for MotionDirection integration',
   preview: true,
   documentationURL: 'https://github.com/tamaygz/ha-motiondirection#zone-editor-card',
